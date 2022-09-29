@@ -1,21 +1,17 @@
 package com.coen424.survey.surveyproject;
 
-import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
 @Configuration
-@EnableDynamoDBRepositories
-        (basePackages = "com.baeldung.spring.data.dynamodb.repositories")
 public class DynamoDBConfig {
-
     @Value("${amazon.dynamodb.endpoint}")
     private String amazonDynamoDBEndpoint;
 
@@ -25,19 +21,21 @@ public class DynamoDBConfig {
     @Value("${amazon.aws.secretkey}")
     private String amazonAWSSecretKey;
 
-    @Value("${AWS_REGION}")
+    @Value("${amazon.aws.region}")
     private String amazonAWSRegion;
 
-    private AmazonDynamoDB amazonDynamoDB = AmazonDynamoDBClientBuilder.standard().withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(amazonDynamoDBEndpoint, amazonAWSRegion)).build();
-
-    private AWSCredentials amazonAWSCredentials() {
-        return new BasicAWSCredentials(
-                amazonAWSAccessKey, amazonAWSSecretKey);
+    private final AWSStaticCredentialsProvider awsCredentialsProvider =
+            new AWSStaticCredentialsProvider(
+                    new BasicAWSCredentials(amazonAWSAccessKey, amazonAWSSecretKey));
+    private AmazonDynamoDB amazonDynamoDB(){
+        return AmazonDynamoDBClientBuilder
+                .standard()
+                .withCredentials(awsCredentialsProvider)
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(amazonDynamoDBEndpoint, amazonAWSRegion))
+                .build();
     }
-
-    private DynamoDBMapper mapper = new DynamoDBMapper(amazonDynamoDB);
-
-    public DynamoDBMapper getMapper() {
-        return mapper;
+    @Bean
+    public DynamoDBMapper mapper() {
+        return new DynamoDBMapper(amazonDynamoDB());
     }
 }
