@@ -24,7 +24,7 @@ docker compose build
 
 ### Install node modules
 ```bash
-docker compose run --rm app_frontend yarn
+docker compose run --rm frontend yarn
 ```
 
 ### Inject Environment Variables
