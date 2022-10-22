@@ -6,10 +6,11 @@ export default defineConfig({
   plugins: [vue()],
   server: {
     host: true,
-    hmr: { port: 80 },
+    // hmr: { port: 80 },
     port: 8080,
     watch: {
       usePolling: true,
+      interval: 1500,
     },
   },
 });
