@@ -12,9 +12,10 @@
   </div>
 </template> 
 
-<script>
+<script lang="ts">
 import { Home } from './views'
 import { Header } from './components'
+
 
 export default {
   name: 'App',

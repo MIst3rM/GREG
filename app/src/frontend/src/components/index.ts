@@ -4,6 +4,8 @@ import SurveyCreator from "./SurveyCreator.vue";
 import DesignerHeader from "./DesignerHeader.vue";
 import SurveyPage from "./SurveyPage.vue";
 import Radiogroup from "./Radiogroup.vue";
+import Checkbox from "./Checkbox.vue";
+import Carousel from "./Carousel.vue";
 
 export {
   Header,
@@ -12,4 +14,6 @@ export {
   DesignerHeader,
   SurveyPage,
   Radiogroup,
+  Checkbox,
+  Carousel,
 };

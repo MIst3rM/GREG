@@ -1,25 +1,15 @@
 <template>
-    <div class="common-layout">
-        <el-container>
-            <el-header>
-            </el-header>
-            <el-main>
-            </el-main>
-            <el-footer></el-footer>
-        </el-container>
-    </div>
+    <h2>{{ user.name }}</h2>
 </template> 
 
 <script>
+
 export default {
-    name: 'Profile',
-    components: {
-    },
-    data() {
-        return {
-        }
-    },
-}
+    setup() {
+        // const { user } = useAuth0();
+        // const code = user ? JSON.stringify(user.value, null, 2) : "";
+    }
+};
 </script>
 
 <style scoped>

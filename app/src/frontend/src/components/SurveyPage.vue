@@ -16,8 +16,9 @@
         </el-col>
     </el-row>
     <el-row justify="center">
-        <el-col :span="18" class="question-box">
-            <component class="question-component" v-for="(question, index) in questions" :is="question" :num="parseInt(index)+1">
+        <el-col :span="18" class="page">
+            <component class="question-component" v-for="(question, index) in questions" :is="question"
+                :num="parseInt(index) + 1" @deleteQuestion="onDeleteQuestion">
             </component>
         </el-col>
     </el-row>
@@ -26,10 +27,11 @@
 <script>
 export default {
     name: 'SurveyPage',
+    emits: ['deleteQuestion'],
     props: {
         questions: {
             type: Array,
-            default: 'div'
+            default: []
         },
     },
     data() {
@@ -37,6 +39,11 @@ export default {
             pageName: "",
             pageDesc: "",
         };
+    },
+    methods: {
+        onDeleteQuestion(index) {
+            this.$emit('deleteQuestion', index);
+        },
     },
 };
 </script>
@@ -55,22 +62,19 @@ export default {
     border-style: none;
 }
 
-.question-box {
+.page {
     border-width: 1px;
     border-color: black;
     border-radius: 5px;
     margin: 20px 0;
-    padding-top: 20px;
-    padding-left: 50px;
-    padding-bottom: 20px;
     background-color: white;
 }
 
-.question-box:hover {
+.page:hover {
     border-style: solid;
 }
 
-.question-component{
+.question-component {
     margin: 20px 0;
 }
 

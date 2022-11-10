@@ -1,42 +1,59 @@
 <template>
-    <el-radio-group v-model="radio">
-        <el-row>
-            <el-col>
-                <el-form>
-                    <el-form-item :label="num + '.'" class="question">
-                        <el-input size="large" placeholder="Question" />
-                    </el-form-item>
-                </el-form>
-            </el-col>
-
-            <draggable v-model="list" tag="transition-group" :component-data="{
-                tag: 'ul',
+    <el-row class="question-title-container">
+        <el-col :span="20">
+            <el-form>
+                <el-form-item :label="num + '.'" class="question">
+                    <el-input v-model="question" size="large" placeholder="Question" />
+                </el-form-item>
+            </el-form>
+        </el-col>
+    </el-row>
+    <el-row class="group-container">
+        <el-radio-group v-model="radio">
+            <draggable class="el-col el-col-24" :list="list" tag="transition-group" :component-data="{
+                tag: 'div',
                 type: 'transition-group',
+                name: 'fade',
             }" @start="drag = true" @end="drag = false" item-key="id">
-                <template #item="{ element }">
-                    <el-col class="answers">
-                        <span class="minus">
-                            <span class="material-icons-outlined minus-inner">
+                <template #item="{ element, index }">
+                    <el-col class="answers" :itemKey="index">
+                        <span v-if="!element.addremove" class="minus" :itemid="index + '-1'">
+                            <span class="material-icons-outlined minus-inner" v-on:click="removeItem(index)"
+                                :itemid="index + '-1.1'">
                                 remove_circle
                             </span>
                         </span>
-                        <el-radio :label="element.order">
-                            <el-input class="choice" size="large" :placeholder="element.name" />
+                        <span v-else class="plus" :itemid="index + '-2'">
+                            <span class="material-icons-outlined plus-inner" v-on:click="addItem(element.name)"
+                                :itemid="index + '-2.1'">
+                                add_circle
+                            </span>
+                        </span>
+                        <el-radio :label="element.order" :itemid="index + '-4'">
+                            <el-input v-model="element.binding" class="choice" size="large" :placeholder="element.name"
+                                :itemid="index + '-4.1'" />
                         </el-radio>
                     </el-col>
                 </template>
             </draggable>
-        </el-row>
-    </el-radio-group>
-
+        </el-radio-group>
+    </el-row>
+    <el-row class="buttons-container">
+        <el-col :span="1">
+            <span class="material-icons-outlined trash" v-on:click="$emit('deleteQuestion', num - 1)">
+                delete_forever
+            </span>
+        </el-col>
+    </el-row>
 </template>
 
-<script>
+<script lang="ts">
 import draggable from 'vuedraggable'
-const answers = ["item1", "item2", "item3"];
+const answers = ["item1", "item2", "item3", "item4", "None", "Other (describe)"];
 
 export default {
     name: 'Radiogroup',
+    emits: ['deleteQuestion'],
     components: {
         draggable
     },
@@ -51,15 +68,46 @@ export default {
             radio: '',
             drag: false,
             list: answers.map((name, index) => {
-                return { name, order: index + 1 };
+                return { name, order: index + 1, addremove: index > 2 ? 1 : 0, binding: "" };
             }),
+            question: '',
+            show: false,
+            initialLength: answers.length
         };
-    }
+    },
+    methods: {
+        removeItem(idx: number) {
+            this.list.splice(idx, 1);
+        },
+        addItem(name: string) {
+            this.list.find((item) => item.name === name).addremove = 0;
+            this.list.find((item) => item.addremove === 1) ? "" : (this.initialLength++, this.list.push({ name: "item" + this.initialLength, order: this.initialLength, addremove: 1, binding: "" }));
+        },
+    },
 
 };
 </script>
 
 <style>
+.trash {
+    font-size: 25px;
+    color: #F44336;
+    cursor: pointer;
+}
+
+.trash:hover {
+    transition: 0.5s ease-in-out;
+    scale: 1.2;
+}
+
+.buttons-container {
+    justify-content: flex-end;
+}
+
+.question-title-container {
+    padding: 20px 20px 0px 20px;
+}
+
 .list-move {
     transition: all 0.5s ease;
 }
@@ -72,11 +120,24 @@ export default {
     scale: 1.5;
 }
 
+.plus {
+    color: green;
+    display: inherit;
+    margin-right: 20px;
+    border-radius: 20px;
+    scale: 1.5;
+}
+
 .minus:hover {
     background-color: var(--red-light, rgba(229, 10, 62, 0.1));
 }
 
-.minus-inner {
+.plus:hover {
+    background-color: var(--green-light, rgba(25, 179, 148, 0.1));
+}
+
+.minus-inner,
+.plus-inner {
     scale: 0.7;
 }
 
@@ -93,5 +154,9 @@ ul {
 
 .question {
     align-items: center;
+}
+
+.group-container {
+    padding: 0 0 0 50px;
 }
 </style>

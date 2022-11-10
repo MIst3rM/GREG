@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "name": "Radiogroup",
+    "content": "radiogroup toolbox item",
+    "type": "radio_button_checked"
+  },
+  {
+    "id": 2,
+    "name": "Checkbox",
+    "content": "checkbox toolbox item",
+    "type": "check_box"
+  },
+  {
+    "id": 3,
+    "name": "Dropdown",
+    "content": "dropdown toolbox item",
+    "type": "segment"
+  },
+  {
+    "id": 4,
+    "name": "Carousel",
+    "content": "carousel toolbox item",
+    "type": "view_carousel"
+  },
+  {
+    "id": 5,
+    "name": "Boolean",
+    "content": "boolean toolbox item",
+    "type": "toggle_on"
+  },
+  {
+    "id": 6,
+    "name": "File Upload",
+    "content": "file toolbox item",
+    "type": "upload_file"
+  },
+  {
+    "id": 7,
+    "name": "Image Picker",
+    "content": "image picker toolbox item",
+    "type": "photo_library"
+  },
+  {
+    "id": 8,
+    "name": "Ranking",
+    "content": "ranking toolbox item",
+    "type": "sort"
+  }
+]

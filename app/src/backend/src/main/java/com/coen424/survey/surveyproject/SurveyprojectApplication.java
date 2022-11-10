@@ -11,6 +11,5 @@ public class SurveyprojectApplication {
 		System.setProperty("spring.devtools.restart.enabled", "false");
 		SpringApplication.run(SurveyprojectApplication.class, args);
 	}
-
 }
 
