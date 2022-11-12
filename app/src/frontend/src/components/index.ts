@@ -6,6 +6,10 @@ import SurveyPage from "./SurveyPage.vue";
 import Radiogroup from "./Radiogroup.vue";
 import Checkbox from "./Checkbox.vue";
 import Carousel from "./Carousel.vue";
+import QuestionTitle from "./QuestionTitle.vue";
+import DeleteQuestion from "./DeleteQuestion.vue";
+import Boolean from "./Boolean.vue";
+import Ranking from "./Ranking.vue";
 
 export {
   Header,
@@ -16,4 +20,9 @@ export {
   Radiogroup,
   Checkbox,
   Carousel,
+  QuestionTitle,
+  DeleteQuestion,
+  Boolean,
+  Ranking,
 };
+

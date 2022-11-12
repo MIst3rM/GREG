@@ -1,18 +1,18 @@
 [
   {
-    "id": 9,
+    "id": "9",
     "name": "Single Input",
     "content": "single Input toolbox item",
     "type": "horizontal_rule"
   },
   {
-    "id": 10,
+    "id": "10",
     "name": "Comment",
     "content": "comment toolbox item",
     "type": "insert_comment"
   },
   {
-    "id": 11,
+    "id": "11",
     "name": "Multiple Text",
     "content": "multiple text toolbox item",
     "type": "format_align_justify"

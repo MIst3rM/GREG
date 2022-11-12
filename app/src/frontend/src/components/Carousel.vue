@@ -1,4 +1,11 @@
 <template>
+    <el-row class="question-title-container">
+        <el-col :span="20">
+            <el-form>
+                <el-form-item :label="num + '.'" />
+            </el-form>
+        </el-col>
+    </el-row>
     <el-row class="carousel-container">
         <el-carousel trigger="click" :autoplay=false type="card" height="350px">
             <el-carousel-item class="carousel-item" v-for="question in questions" :key="question">
@@ -14,18 +21,34 @@
             </el-button>
         </el-button-group>
     </el-row>
+    <DeleteQuestion :num="num" @deleteQuestion="onDeleteQuestion" />
 </template>
 
 <script lang="ts">
+import DeleteQuestion from './DeleteQuestion.vue'
 const qs = ["Question1", "Question2", "Question3", "Question4", "Question5", "Question6"]
 export default {
     name: 'Carousel',
+    props: {
+        num: {
+            type: Number,
+            default: 0
+        },
+    },
+    components: {
+        DeleteQuestion
+    },
     data() {
         return {
             questions: qs.map((name) => {
                 return { name, binding: "" };
             }),
             answers: ["Strongly agree", "Somewhat agree", "Neutral", "Somewhat disagree", "Strongly disagree"],
+        }
+    },
+    methods: {
+        onDeleteQuestion(idx: number) {
+            this.$emit('deleteQuestion', idx)
         }
     }
 }
@@ -34,6 +57,10 @@ export default {
 <style scoped>
 .question {
     --el-input-placeholder-color: black;
+}
+
+.question-title-container {
+    padding: 20px 20px 0px 20px;
 }
 
 .carousel-container {

@@ -1,13 +1,5 @@
 <template>
-    <el-row class="question-title-container">
-        <el-col :span="20">
-            <el-form>
-                <el-form-item :label="num + '.'" class="question">
-                    <el-input v-model="question" size="large" placeholder="Question" />
-                </el-form-item>
-            </el-form>
-        </el-col>
-    </el-row>
+    <QuestionTitle :num="num" />
     <el-row class="group-container">
         <el-radio-group v-model="radio">
             <draggable class="el-col el-col-24" :list="list" tag="transition-group" :component-data="{
@@ -38,24 +30,23 @@
             </draggable>
         </el-radio-group>
     </el-row>
-    <el-row class="buttons-container">
-        <el-col :span="1">
-            <span class="material-icons-outlined trash" v-on:click="$emit('deleteQuestion', num - 1)">
-                delete_forever
-            </span>
-        </el-col>
-    </el-row>
+    <DeleteQuestion :num="num" @deleteQuestion="onDeleteQuestion" />
 </template>
 
 <script lang="ts">
 import draggable from 'vuedraggable'
+import QuestionTitle from './QuestionTitle.vue'
+import DeleteQuestion from './DeleteQuestion.vue'
 const answers = ["item1", "item2", "item3", "item4", "None", "Other (describe)"];
+
 
 export default {
     name: 'Radiogroup',
     emits: ['deleteQuestion'],
     components: {
-        draggable
+        draggable,
+        QuestionTitle,
+        DeleteQuestion
     },
     props: {
         num: {
@@ -83,31 +74,15 @@ export default {
             this.list.find((item) => item.name === name).addremove = 0;
             this.list.find((item) => item.addremove === 1) ? "" : (this.initialLength++, this.list.push({ name: "item" + this.initialLength, order: this.initialLength, addremove: 1, binding: "" }));
         },
+        onDeleteQuestion(idx: number) {
+            this.$emit('deleteQuestion', idx);
+        }
     },
 
 };
 </script>
 
 <style>
-.trash {
-    font-size: 25px;
-    color: #F44336;
-    cursor: pointer;
-}
-
-.trash:hover {
-    transition: 0.5s ease-in-out;
-    scale: 1.2;
-}
-
-.buttons-container {
-    justify-content: flex-end;
-}
-
-.question-title-container {
-    padding: 20px 20px 0px 20px;
-}
-
 .list-move {
     transition: all 0.5s ease;
 }

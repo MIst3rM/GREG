@@ -52,6 +52,8 @@ import DesignerHeader from "./DesignerHeader.vue";
 import Radiogroup from "./Radiogroup.vue";
 import Checkbox from "./Checkbox.vue";
 import Carousel from "./Carousel.vue";
+import Boolean from "./Boolean.vue";
+import Ranking from "./Ranking.vue";
 import toolbox1 from "../assets/toolbox1.json";
 import toolbox2 from "../assets/toolbox2.json";
 
@@ -64,7 +66,9 @@ export default {
         DesignerHeader,
         Radiogroup,
         Checkbox,
-        Carousel
+        Carousel,
+        Boolean,
+        Ranking
     },
     data() {
         return {
@@ -82,7 +86,7 @@ export default {
         },
         add_item(el) {
             switch (el.index) {
-                case 1:
+                case "1":
                     this.questions.push(Radiogroup);
                     // this.surveyJson = {
                     //     "logoPosition": "right",
@@ -119,34 +123,34 @@ export default {
                     // }];
                     // survey.render("survey");
                     break
-                case 2:
+                case "2":
                     this.questions.push(Checkbox);
                     break
-                case 3:
+                case "3":
                     console.log('dropdown')
                     break
-                case 4:
+                case "4":
                     this.questions.push(Carousel);
                     break
-                case 5:
-                    console.log('boolean')
+                case "5":
+                    this.questions.push(Boolean);
                     break
-                case 6:
+                case "6":
                     console.log('file')
                     break
-                case 7:
+                case "7":
                     console.log('image')
                     break
-                case 8:
-                    console.log('ranking')
+                case "8":
+                    this.questions.push(Ranking);
                     break
-                case 9:
+                case "9":
                     console.log('single')
                     break
-                case 10:
+                case "10":
                     console.log('comment')
                     break
-                case 11:
+                case "11":
                     console.log('multiple')
                     break
             }
