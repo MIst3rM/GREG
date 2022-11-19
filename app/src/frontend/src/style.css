@@ -16,8 +16,10 @@
   -webkit-text-size-adjust: 100%; */
 }
 
-body{
-  margin: 0;
+html,
+body {
+  margin: 0px;
+  height: 100%;
 }
 
 .el-input__wrapper {

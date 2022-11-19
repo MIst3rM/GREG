@@ -18,7 +18,7 @@
     <el-row justify="center">
         <el-col :span="18" class="page">
             <component class="question-component" v-for="(question, index) in questions" :is="question"
-                :num="parseInt(index) + 1" @deleteQuestion="onDeleteQuestion">
+                :num="parseInt(index) + 1" @deleteQuestion="onDeleteQuestion" @saveChanges="onSaveChanges">
             </component>
         </el-col>
     </el-row>
@@ -27,7 +27,7 @@
 <script>
 export default {
     name: 'SurveyPage',
-    emits: ['deleteQuestion'],
+    emits: ['deleteQuestion', 'saveChanges'],
     props: {
         questions: {
             type: Array,
@@ -44,6 +44,9 @@ export default {
         onDeleteQuestion(index) {
             this.$emit('deleteQuestion', index);
         },
+        onSaveChanges() {
+            this.$emit('saveChanges');
+        }
     },
 };
 </script>

@@ -12,4 +12,3 @@ public class SurveyprojectApplication {
 		SpringApplication.run(SurveyprojectApplication.class, args);
 	}
 }
-

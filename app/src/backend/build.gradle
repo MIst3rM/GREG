@@ -21,6 +21,13 @@ dependencies {
 	implementation platform('software.amazon.awssdk:bom:2.17.276')
 	implementation 'software.amazon.awssdk:dynamodb-enhanced'
 	implementation group: 'com.github.derjust', name: 'spring-data-dynamodb', version: '5.1.0'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: '5.7.5'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: '2.7.5'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 }
 
 bootJar {

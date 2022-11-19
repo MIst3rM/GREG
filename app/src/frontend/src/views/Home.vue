@@ -27,6 +27,8 @@ export default {
     name: 'Home',
     components: {
     },
+    setup(){
+    },
     data() {
         return {
         }

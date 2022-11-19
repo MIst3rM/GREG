@@ -1,10 +1,10 @@
 import { createApp } from "vue";
-import { createAuth0 } from "@auth0/auth0-vue";
 import { createPinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import ElementPlus from "element-plus";
 import * as ElementPlusIconsVue from "@element-plus/icons-vue";
 import { createRouter, createWebHistory } from "vue-router";
+import { vue3Debounce } from 'vue-debounce'
 import "element-plus/dist/index.css";
 import "./style.css";
 import "survey-core/defaultV2.min.css";
@@ -38,11 +38,5 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 app.use(pinia);
 app.use(ElementPlus);
-app.use(
-  createAuth0({
-    domain: "dev-zpqo8nwz3kxik1py.us.auth0.com",
-    client_id: "7SaF0Mjp9BdXrc1sIAnNKS1iyc1eRNNo",
-    redirect_uri: window.location.origin,
-  })
-);
+app.directive('debounce', vue3Debounce({ lock: true }))
 app.mount("#app");

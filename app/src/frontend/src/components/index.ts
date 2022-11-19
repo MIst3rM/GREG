@@ -10,6 +10,7 @@ import QuestionTitle from "./QuestionTitle.vue";
 import DeleteQuestion from "./DeleteQuestion.vue";
 import Boolean from "./Boolean.vue";
 import Ranking from "./Ranking.vue";
+import ImagePicker from "./ImagePicker.vue";
 
 export {
   Header,
@@ -24,5 +25,6 @@ export {
   DeleteQuestion,
   Boolean,
   Ranking,
+  ImagePicker,
 };
 

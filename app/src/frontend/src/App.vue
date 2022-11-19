@@ -4,10 +4,10 @@
       <el-header height="100px">
         <Header />
       </el-header>
-      <el-main>
+      <el-main class="main-container">
         <router-view />
       </el-main>
-      <el-footer></el-footer>
+      <!-- <el-footer></el-footer> -->
     </el-container>
   </div>
 </template> 
@@ -31,4 +31,7 @@ export default {
 </script>
 
 <style scoped>
+.main-container{
+  height: 100%;
+}
 </style>

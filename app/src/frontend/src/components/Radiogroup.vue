@@ -1,5 +1,5 @@
 <template>
-    <QuestionTitle :num="num" />
+    <QuestionTitle :saving="saving" :num="num" ref="questionTitle" />
     <el-row class="group-container">
         <el-radio-group v-model="radio">
             <draggable class="el-col el-col-24" :list="list" tag="transition-group" :component-data="{
@@ -30,6 +30,9 @@
             </draggable>
         </el-radio-group>
     </el-row>
+    <el-row class="save-container">
+        <el-button @click="save">Save Changes</el-button>
+    </el-row>
     <DeleteQuestion :num="num" @deleteQuestion="onDeleteQuestion" />
 </template>
 
@@ -37,12 +40,12 @@
 import draggable from 'vuedraggable'
 import QuestionTitle from './QuestionTitle.vue'
 import DeleteQuestion from './DeleteQuestion.vue'
+import { useAppStore } from '../store/app';
 const answers = ["item1", "item2", "item3", "item4", "None", "Other (describe)"];
-
 
 export default {
     name: 'Radiogroup',
-    emits: ['deleteQuestion'],
+    emits: ['deleteQuestion', 'saveChanges'],
     components: {
         draggable,
         QuestionTitle,
@@ -54,6 +57,12 @@ export default {
             default: 0
         },
     },
+    setup() {
+        const appStore = useAppStore();
+        return {
+            appStore
+        }
+    },
     data() {
         return {
             radio: '',
@@ -63,7 +72,8 @@ export default {
             }),
             question: '',
             show: false,
-            initialLength: answers.length
+            initialLength: answers.length,
+            saving: false
         };
     },
     methods: {
@@ -76,6 +86,27 @@ export default {
         },
         onDeleteQuestion(idx: number) {
             this.$emit('deleteQuestion', idx);
+        },
+        save() {
+            let question = {
+                "type": "radiogroup",
+                "name": "question" + this.num,
+                "title": this.$refs.questionTitle.question,
+                "choices": []
+            }
+            this.list.forEach((item) => {
+                if (item.addremove === 0) {
+                    question.choices.push(item.binding);
+                }
+            })
+            if (this.appStore.findElement(this.num-1)) {
+                this.appStore.updateElement(this.num-1, question);
+            } else {
+                this.appStore.addQuestion("Page1", question);
+            }
+            this.saving = true;
+            setTimeout(() => this.saving = false, 4000);
+            this.$emit('saveChanges');
         }
     },
 
@@ -83,6 +114,16 @@ export default {
 </script>
 
 <style>
+.el-form-item__content {
+    justify-content: flex-end;
+}
+
+.save-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
 .list-move {
     transition: all 0.5s ease;
 }

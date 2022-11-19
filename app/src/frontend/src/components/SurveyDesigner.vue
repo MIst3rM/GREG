@@ -26,10 +26,19 @@
                     </el-menu>
                 </el-col>
                 <el-col class="designer" :span="21">
-                    <DesignerHeader />
-                    <SurveyPage @deleteQuestion="onDeleteQuestion" :questions="{ ...questions }"
-                        :numOfQuestions="questions.length" />
+                    <DesignerHeader v-if="appStore.getNumberOfPages !== 0" />
+                    <SurveyPage v-if="appStore.getNumberOfPages !== 0" @deleteQuestion="onDeleteQuestion"
+                        @saveChanges="onSaveChanges" :questions="{ ...questions }" :numOfQuestions="questions.length" />
+                    <el-empty v-if="appStore.getNumberOfPages === 0"
+                        description="Click The Button Below To Get Started">
+                        <el-button type="primary" @click="addPage">Add A Page</el-button>
+                    </el-empty>
                 </el-col>
+                <el-row class="submit-survey-container">
+                    <el-button class="create-survey">
+                        Create Survey
+                    </el-button>
+                </el-row>
             </el-row>
         </el-tab-pane>
         <el-tab-pane label="Preview" name="second">
@@ -47,6 +56,8 @@ StylesManager.applyTheme("modern");
 
 import { Survey } from 'survey-knockout-ui';
 
+StylesManager.applyTheme("modern");
+
 import SurveyPage from './SurveyPage.vue';
 import DesignerHeader from "./DesignerHeader.vue";
 import Radiogroup from "./Radiogroup.vue";
@@ -54,13 +65,33 @@ import Checkbox from "./Checkbox.vue";
 import Carousel from "./Carousel.vue";
 import Boolean from "./Boolean.vue";
 import Ranking from "./Ranking.vue";
+import ImagePicker from "./ImagePicker.vue";
 import toolbox1 from "../assets/toolbox1.json";
 import toolbox2 from "../assets/toolbox2.json";
+import { Auth } from 'aws-amplify';
+import { useAppStore } from '../store/app';
 
 import { ref } from 'vue';
 
 export default {
     name: 'SurveyDesigner',
+    async beforeRouteEnter(to, from, next) {
+        let isAuthenticated = false;
+        try {
+            if (await Auth.currentUserInfo()) {
+                isAuthenticated = true;
+            }
+        } catch (error) {
+            isAuthenticated = false;
+        }
+        next(vm => {
+            if (!isAuthenticated) {
+                vm.$router.push('/');
+            } else {
+                vm.$router.push('/survey-designer');
+            }
+        });
+    },
     components: {
         SurveyPage,
         DesignerHeader,
@@ -68,60 +99,47 @@ export default {
         Checkbox,
         Carousel,
         Boolean,
-        Ranking
+        Ranking,
+        ImagePicker
+    },
+    setup() {
+        const appStore = useAppStore();
+        return {
+            appStore
+        }
     },
     data() {
         return {
+            idx: 0,
+            timer: null,
             isCollapse: false,
-            surveyJson: {},
-            questions: [],
+            questions: [] as Array<any>,
+            pages: [] as Array<string>,
             activeTab: ref('first'),
             primaryToolbox: toolbox1,
-            secondaryToolbox: toolbox2
+            secondaryToolbox: toolbox2,
         }
     },
     methods: {
+        addPage() {
+            this.idx += 1;
+            this.appStore.addPage({
+                "name": "Page" + this.idx,
+                "elements": []
+            })
+            this.pages.push("Page" + this.idx);
+        },
         onDeleteQuestion(num: number) {
             this.questions.splice(num, 1);
+        },
+        onSaveChanges() {
+            let survey = new Survey(this.appStore.getSurvey);
+            survey.render("survey");
         },
         add_item(el) {
             switch (el.index) {
                 case "1":
                     this.questions.push(Radiogroup);
-                    // this.surveyJson = {
-                    //     "logoPosition": "right",
-                    //     "pages": [
-                    //         {
-                    //             "name": "page1",
-                    //             "elements": [
-                    //                 {
-                    //                     "type": "radiogroup",
-                    //                     "name": "question1",
-                    //                     "choices": [
-                    //                         "item1",
-                    //                         "item2",
-                    //                         "item3"
-                    //                     ]
-                    //                 }
-                    //             ]
-                    //         }
-                    //     ]
-                    // };
-                    // const survey = new Survey();
-                    // const page = survey.addNewPage("page1");
-                    // const question = page.addNewQuestion("radiogroup", "question1");
-                    // question.title = "Please select the best item:";
-                    // question.choices = [{
-                    //     "value": "item1",
-                    //     "text": "item1"
-                    // }, {
-                    //     "value": "item2",
-                    //     "text": "item2"
-                    // }, {
-                    //     "value": "item3",
-                    //     "text": "item3"
-                    // }];
-                    // survey.render("survey");
                     break
                 case "2":
                     this.questions.push(Checkbox);
@@ -139,7 +157,7 @@ export default {
                     console.log('file')
                     break
                 case "7":
-                    console.log('image')
+                    this.questions.push(ImagePicker);
                     break
                 case "8":
                     this.questions.push(Ranking);
@@ -160,6 +178,18 @@ export default {
 </script>
 
 <style>
+.submit-survey-container {
+    width: 100%;
+    justify-content: center;
+}
+
+.create-survey {
+    margin: 20px;
+    height: 50px;
+    width: 200px;
+    font-size: larger;
+}
+
 #editor {
     background-color: #f3f3f3;
 }
