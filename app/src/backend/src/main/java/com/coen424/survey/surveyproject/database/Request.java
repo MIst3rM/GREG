@@ -45,7 +45,6 @@ public class Request<T> {
 
         } catch (DynamoDbException e) {
             System.err.println(e.getMessage());
-            System.exit(1);
         }
         return result;
     }
@@ -70,7 +69,6 @@ public class Request<T> {
 
         } catch (DynamoDbException e) {
             System.err.println(e.getMessage());
-            System.exit(1);
         }
         return result;
     }
@@ -83,7 +81,6 @@ public class Request<T> {
             table.putItem(item);
         } catch (DynamoDbException e) {
             System.err.println(e.getMessage());
-            System.exit(1);
         }
     }
 
@@ -99,7 +96,6 @@ public class Request<T> {
             table.deleteItem(key);
         } catch (DynamoDbException e) {
             System.err.println(e.getMessage());
-            System.exit(1);
         }
     }
 }

@@ -23,6 +23,7 @@
     "element-plus": "^2.2.19",
     "pinia": "^2.0.23",
     "pinia-plugin-persistedstate": "^2.3.0",
+    "rayso-api": "^1.0.10",
     "survey-creator-knockout": "^1.9.54",
     "survey-vue": "^1.9.54",
     "survey-vue-ui": "^1.9.54",
@@ -30,6 +31,7 @@
     "vue-chartjs": "^4.1.2",
     "vue-debounce": "^4.0.0",
     "vue-router": "^4.1.5",
+    "vue3-uuid": "^1.0.0",
     "vuedraggable": "^4.1.0"
   },
   "devDependencies": {

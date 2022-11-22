@@ -10,7 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
-
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 public class DBRequestController {
     @PostMapping(value = "/api/v1/getForm")
@@ -33,6 +33,7 @@ public class DBRequestController {
         Request<Forms> request = new Request<>();
         System.out.println(request.getAll(options));
     }
+
     @PostMapping(value = "/api/v1/createForm")
     public String createForm(@AuthenticationPrincipal Jwt jwt, @RequestBody String form) {
         RequestOptions options = new RequestOptions.RequestBuilder()
@@ -61,5 +62,4 @@ public class DBRequestController {
         request.delete(options);
         return "Form deleted successfully";
     }
-
 }

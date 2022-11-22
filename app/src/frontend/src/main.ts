@@ -11,9 +11,13 @@ import "survey-core/defaultV2.min.css";
 import "survey-core/modern.min.css";
 import "survey-creator-core/survey-creator-core.min.css";
 import App from "./App.vue";
+import axios from "axios";
+import UUID from "vue3-uuid";
 
 import { Home, Profile, Report } from "./views";
 import { SurveyDesigner, SurveyCreator } from "./components";
+
+axios.defaults.baseURL = "http://localhost:8090/api/v1/";
 
 const routes = [
   { path: "/", component: Home },
@@ -39,4 +43,5 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 app.use(pinia);
 app.use(ElementPlus);
 app.directive('debounce', vue3Debounce({ lock: true }))
+app.use(UUID);
 app.mount("#app");

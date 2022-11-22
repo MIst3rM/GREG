@@ -109,12 +109,11 @@ export default {
             this.$emit('saveChanges');
         }
     },
-
 };
 </script>
 
 <style>
-.el-form-item__content {
+.status .el-form-item__content {
     justify-content: flex-end;
 }
 

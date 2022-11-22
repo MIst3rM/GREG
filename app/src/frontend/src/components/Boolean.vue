@@ -1,5 +1,5 @@
 <template>
-    <QuestionTitle :num="num" />
+    <QuestionTitle ref="questionTitle" :saving="saving" :num="num" />
     <el-row class="boolean-btn-container">
         <el-col :span="2" class="button-column">
             <el-switch class="boolean" v-model="value" size="large"
@@ -15,14 +15,19 @@
             <el-input v-model="right" maxlength="10" show-word-limit placeholder="set right value" />
         </el-col>
     </el-row>
+    <el-row class="save-container">
+        <el-button @click="save">Save Changes</el-button>
+    </el-row>
     <DeleteQuestion :num="num" @deleteQuestion="onDeleteQuestion" />
 </template>
 
 <script lang="ts">
 import QuestionTitle from './QuestionTitle.vue'
 import DeleteQuestion from './DeleteQuestion.vue'
+import { useAppStore } from '../store/app';
 export default {
     name: 'Boolean',
+    emits: ['deleteQuestion', 'saveChanges'],
     props: {
         num: {
             type: Number,
@@ -34,16 +39,40 @@ export default {
         QuestionTitle,
         DeleteQuestion
     },
+    setup() {
+        const appStore = useAppStore();
+        return {
+            appStore
+        }
+    },
     data() {
         return {
             value: '',
             left: '',
-            right: ''
+            right: '',
+            saving: false
         }
     },
     methods: {
         onDeleteQuestion(idx: number) {
             this.$emit('deleteQuestion', idx)
+        },
+        save() {
+            let question = {
+                "type": "boolean",
+                "name": "question" + this.num,
+                "title": this.$refs.questionTitle.question,
+                "labelTrue": this.right,
+                "labelFalse": this.left,
+            }
+            if (this.appStore.findElement(this.num - 1)) {
+                this.appStore.updateElement(this.num - 1, question);
+            } else {
+                this.appStore.addQuestion("Page1", question);
+            }
+            this.saving = true;
+            setTimeout(() => this.saving = false, 4000);
+            this.$emit('saveChanges');
         }
     }
 }

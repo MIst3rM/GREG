@@ -31,7 +31,7 @@ export default {
 </script>
 
 <style scoped>
-.main-container{
+.main-container {
   height: 100%;
 }
 </style>

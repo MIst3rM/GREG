@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import { useAppStore } from '../store/app';
 export default {
     name: 'SurveyPage',
     emits: ['deleteQuestion', 'saveChanges'],
@@ -32,7 +33,13 @@ export default {
         questions: {
             type: Array,
             default: []
-        },
+        }
+    },
+    setup() {
+        const appStore = useAppStore();
+        return {
+            appStore
+        }
     },
     data() {
         return {

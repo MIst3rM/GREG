@@ -35,7 +35,7 @@
                     </el-empty>
                 </el-col>
                 <el-row class="submit-survey-container">
-                    <el-button class="create-survey">
+                    <el-button @click="createSurvey" v-if="appStore.getNumberOfPages !== 0" class="create-survey">
                         Create Survey
                     </el-button>
                 </el-row>
@@ -52,11 +52,8 @@
 <script lang="ts">
 import "survey-core/modern.min.css";
 import { StylesManager, SurveyTriggerSetValue } from "survey-core";
-StylesManager.applyTheme("modern");
-
+// StylesManager.applyTheme("modern");
 import { Survey } from 'survey-knockout-ui';
-
-StylesManager.applyTheme("modern");
 
 import SurveyPage from './SurveyPage.vue';
 import DesignerHeader from "./DesignerHeader.vue";
@@ -70,6 +67,7 @@ import toolbox1 from "../assets/toolbox1.json";
 import toolbox2 from "../assets/toolbox2.json";
 import { Auth } from 'aws-amplify';
 import { useAppStore } from '../store/app';
+import axios from "axios";
 
 import { ref } from 'vue';
 
@@ -108,6 +106,9 @@ export default {
             appStore
         }
     },
+    beforeUnmount() {
+        this.appStore.saveQuestions(this.questions);
+    },
     data() {
         return {
             idx: 0,
@@ -121,6 +122,26 @@ export default {
         }
     },
     methods: {
+        createSurvey() {
+            Auth.currentSession().then((session) => {
+                axios.defaults.headers.common['Authorization'] = `Bearer ${session.getAccessToken().getJwtToken()}`;
+                axios.defaults.headers.post['Content-Type'] = 'application/json';
+            });
+            let surveyQuestions = {};
+            this.appStore.getQuestions.elements.forEach((question) => {
+                surveyQuestions[question.title] = question.choices
+            });
+            axios.post('/createForm', {
+                form_id: this.appStore.getSurveyId,
+                title: this.appStore.getTitle,
+                description: this.appStore.getDescription,
+                questions: surveyQuestions,
+            }).then((response) => {
+                console.log(response);
+            }).catch((error) => {
+                console.log(error);
+            });
+        },
         addPage() {
             this.idx += 1;
             this.appStore.addPage({
@@ -131,6 +152,8 @@ export default {
         },
         onDeleteQuestion(num: number) {
             this.questions.splice(num, 1);
+            this.appStore.removeElement(num);
+            this.onSaveChanges();
         },
         onSaveChanges() {
             let survey = new Survey(this.appStore.getSurvey);

@@ -11,6 +11,7 @@ import DeleteQuestion from "./DeleteQuestion.vue";
 import Boolean from "./Boolean.vue";
 import Ranking from "./Ranking.vue";
 import ImagePicker from "./ImagePicker.vue";
+import ApiForm from "./ApiForm.vue";
 
 export {
   Header,
@@ -26,5 +27,6 @@ export {
   Boolean,
   Ranking,
   ImagePicker,
+  ApiForm,
 };
 

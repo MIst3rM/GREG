@@ -4,7 +4,7 @@
             <el-input v-debounce:1000ms="setTitle" v-model="surveyName" class="surveyName" size="large" placeholder="Survey Title" />
         </el-col>
         <el-col class="header-component" :span="24">
-            <el-input v-debounce:1000ms="setDescription" v-model="surveyDesc" maxlength="15" show-word-limit type="text" class="surveyDesc" size="large"
+            <el-input v-debounce:1000ms="setDescription" v-model="surveyDesc" maxlength="25" show-word-limit type="text" class="surveyDesc" size="large"
                 placeholder="description" />
         </el-col>
     </el-row>
