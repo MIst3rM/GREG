@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . /app
 
-EXPOSE 8090
+EXPOSE 5000
 
 RUN chmod +x start.sh && gradle clean build -x test --stacktrace
 
