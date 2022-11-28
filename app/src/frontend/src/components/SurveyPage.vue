@@ -24,7 +24,7 @@
     </el-row>
 </template>
 
-<script>
+<script lang="ts">
 import { useAppStore } from '../store/app';
 export default {
     name: 'SurveyPage',

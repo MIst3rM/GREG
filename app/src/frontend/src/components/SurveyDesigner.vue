@@ -7,7 +7,8 @@
                         <el-popover v-for="tool in primaryToolbox" placement="right" :title="tool.name" :width="200"
                             trigger="hover" :content="tool.content">
                             <template #reference>
-                                <el-menu-item :disabled="appStore.getNumberOfPages === 0 ? true: false" :index="tool.id" @click="add_item">
+                                <el-menu-item :disabled="appStore.getNumberOfPages === 0 ? true : false"
+                                    :index="tool.id" @click="add_item">
                                     <span class="material-icons-outlined">{{ tool.type }}</span>
                                 </el-menu-item>
                             </template>
@@ -16,7 +17,8 @@
                         <el-popover v-for="tool in secondaryToolbox" placement="right" :title="tool.name" :width="200"
                             trigger="hover" :content="tool.content">
                             <template #reference>
-                                <el-menu-item :disabled="appStore.getNumberOfPages === 0 ? true: false" :index="tool.id" @click="add_item">
+                                <el-menu-item :disabled="appStore.getNumberOfPages === 0 ? true : false"
+                                    :index="tool.id" @click="add_item">
                                     <span class="material-icons-outlined">
                                         {{ tool.type }}
                                     </span>
@@ -48,7 +50,17 @@
                 </el-row>
             </el-row>
         </el-tab-pane>
-        <el-tab-pane label="Preview" name="second">
+        <el-tab-pane name="second" :disabled="appStore.getNumberOfQuestions === 0 ? true : false">
+            <template #label>
+                <el-popover :disabled="appStore.getNumberOfQuestions !== 0 ? true : false" :width="180"
+                    placement="bottom" trigger="hover" content="Save your changes first">
+                    <template #reference>
+                        <span class="custom-tabs-label">
+                            <span>Preview</span>
+                        </span>
+                    </template>
+                </el-popover>
+            </template>
             <div v-if="appStore.getNumberOfPages !== 0" id="survey"></div>
             <el-empty v-else></el-empty>
         </el-tab-pane>
@@ -99,6 +111,14 @@ export default {
             }
         });
     },
+    beforeRouteLeave(to, from, next) {
+        if (this.isEditing) {
+            if (!window.confirm("Leave without saving?")) {
+                return;
+            }
+        }
+        next();
+    },
     components: {
         SurveyPage,
         DesignerHeader,
@@ -116,7 +136,12 @@ export default {
             appStore
         }
     },
+    beforeMount() {
+        console.log(this.appStore.getQuestions);
+        window.addEventListener("beforeunload", this.preventNav)
+    },
     beforeUnmount() {
+        window.removeEventListener("beforeunload", this.preventNav);
         this.appStore.saveQuestions(this.questions);
     },
     data() {
@@ -130,9 +155,15 @@ export default {
             primaryToolbox: toolbox1,
             secondaryToolbox: toolbox2,
             saveDisabled: true,
+            isEditing: false
         }
     },
     methods: {
+        preventNav(event) {
+            if (!this.isEditing) return
+            event.preventDefault()
+            event.returnValue = ""
+        },
         createSurvey() {
             Auth.currentSession().then((session) => {
                 axios.defaults.headers.common['Authorization'] = `Bearer ${session.getAccessToken().getJwtToken()}`;
@@ -176,6 +207,7 @@ export default {
             survey.render("survey");
         },
         add_item(el) {
+            this.isEditing = true;
             switch (el.index) {
                 case "1":
                     this.questions.push(Radiogroup);

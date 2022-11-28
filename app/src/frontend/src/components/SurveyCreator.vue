@@ -2,7 +2,7 @@
     <div id="surveyCreator" />
 </template>
 
-<script>
+<script lang="ts">
 import { SurveyCreator } from "survey-creator-knockout";
 const creatorOptions = {
     showLogicTab: true,

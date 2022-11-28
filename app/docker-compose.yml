@@ -19,10 +19,6 @@ services:
       - ./src/frontend:/var/www/frontend
     env_file:
       - ./.env
-    environment:
-      VITE_AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      VITE_AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      VITE_AWS_REGION: ${AWS_REGION}
     depends_on:
       - backend
 
