@@ -30,7 +30,9 @@ jobs:
     - name: Run build with Gradle Wrapper
       run: ./gradlew build -x test
     - name: Print directory
-      run: ls
+      run: |
+        ls build
+        ls build/libs
 #     - name: Upload JAR
 #       uses: actions/upload-artifact@v2
 #       with: 
