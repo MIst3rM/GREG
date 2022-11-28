@@ -30,7 +30,7 @@ jobs:
     - name: Run build with Gradle Wrapper
       run: ./gradlew build -x test
     - name: Upload JAR
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with: 
         name: artifact
         path: app/src/backend/build/libs/surveyproject-0.0.1-SNAPSHOT.jar
@@ -48,7 +48,7 @@ jobs:
       # Deploy the artifact (JAR) into AWS Beanstalk
       
       - name: Deploy to EB
-        uses: einaregilsson/beanstalk-deploy@v13
+        uses: einaregilsson/beanstalk-deploy@v21
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
