@@ -30,10 +30,7 @@
             </draggable>
         </el-checkbox-group>
     </el-row>
-    <el-row class="save-container">
-        <el-button @click="save">Save Changes</el-button>
-    </el-row>
-    <DeleteQuestion :num="num" @deleteQuestion="onDeleteQuestion" />
+    <DeleteQuestion ref="deleteQuestion" :num="num" @deleteQuestion="onDeleteQuestion" />
 </template>
 
 <script lang="ts">
@@ -90,7 +87,8 @@ export default {
         save() {
             let question = {
                 "type": "checkbox",
-                "name": "question" + this.num,
+                "name": "question " + this.num,
+                "isRequired": this.$refs.deleteQuestion.required,
                 "title": this.$refs.questionTitle.question,
                 "choices": []
             }

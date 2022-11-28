@@ -2,38 +2,35 @@
     <QuestionTitle :saving="saving" :num="num" ref="questionTitle" />
     <el-row class="group-container">
         <el-radio-group v-model="radio">
-            <draggable class="el-col el-col-24" :list="list" tag="transition-group" :component-data="{
+            <draggable :list="list" tag="transition-group" :component-data="{
                 tag: 'div',
                 type: 'transition-group',
                 name: 'fade',
             }" @start="drag = true" @end="drag = false" item-key="id">
                 <template #item="{ element, index }">
-                    <el-col class="answers" :itemKey="index">
-                        <span v-if="!element.addremove" class="minus" :itemid="index + '-1'">
+                    <el-col :key="index" class="answers">
+                        <span v-if="!element.addremove" class="minus" :key="index + '-1'">
                             <span class="material-icons-outlined minus-inner" v-on:click="removeItem(index)"
-                                :itemid="index + '-1.1'">
+                                :key="index + '-1.1'">
                                 remove_circle
                             </span>
                         </span>
-                        <span v-else class="plus" :itemid="index + '-2'">
+                        <span v-else class="plus" :key="index + '-2'">
                             <span class="material-icons-outlined plus-inner" v-on:click="addItem(element.name)"
-                                :itemid="index + '-2.1'">
+                                :key="index + '-2.1'">
                                 add_circle
                             </span>
                         </span>
-                        <el-radio :label="element.order" :itemid="index + '-4'">
+                        <el-radio :label="element.order" :key="index + '-4'">
                             <el-input v-model="element.binding" class="choice" size="large" :placeholder="element.name"
-                                :itemid="index + '-4.1'" />
+                                :key="index + '-4.1'" />
                         </el-radio>
                     </el-col>
                 </template>
             </draggable>
         </el-radio-group>
     </el-row>
-    <el-row class="save-container">
-        <el-button @click="save">Save Changes</el-button>
-    </el-row>
-    <DeleteQuestion :num="num" @deleteQuestion="onDeleteQuestion" />
+    <DeleteQuestion ref="deleteQuestion" :num="num" @deleteQuestion="onDeleteQuestion" />
 </template>
 
 <script lang="ts">
@@ -91,6 +88,7 @@ export default {
             let question = {
                 "type": "radiogroup",
                 "name": "question" + this.num,
+                "isRequired": this.$refs.deleteQuestion.required,
                 "title": this.$refs.questionTitle.question,
                 "choices": []
             }

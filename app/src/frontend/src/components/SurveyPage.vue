@@ -17,7 +17,7 @@
     </el-row>
     <el-row justify="center">
         <el-col :span="18" class="page">
-            <component class="question-component" v-for="(question, index) in questions" :is="question"
+            <component v-for="(question, index) in questions" :is="{ ...question }" :ref="index"
                 :num="parseInt(index) + 1" @deleteQuestion="onDeleteQuestion" @saveChanges="onSaveChanges">
             </component>
         </el-col>

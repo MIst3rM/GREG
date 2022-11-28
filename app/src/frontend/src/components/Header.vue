@@ -58,7 +58,7 @@ export default {
             user: ref({}),
         }
     },
-    async mounted() {
+    async beforeMount() {
         const current_user = await Auth.currentAuthenticatedUser();
         if (current_user) {
             this.isAuthenticated = true;

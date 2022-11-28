@@ -14,10 +14,10 @@ import App from "./App.vue";
 import axios from "axios";
 import UUID from "vue3-uuid";
 
-import { Home, Profile, Report } from "./views";
+import { Home, Profile, Report, SharedResults } from "./views";
 import { SurveyDesigner, SurveyCreator } from "./components";
 
-axios.defaults.baseURL = "http://localhost:8090/api/v1/";
+axios.defaults.baseURL = "http://localhost:8090/api/v1";
 
 const routes = [
   { path: "/", component: Home },
@@ -25,6 +25,7 @@ const routes = [
   { path: "/survey-designer", component: SurveyDesigner },
   { path: "/survey-creator", component: SurveyCreator },
   { path: "/report", component: Report },
+  { path: "/results", component: SharedResults },
 ];
 
 const router = createRouter({

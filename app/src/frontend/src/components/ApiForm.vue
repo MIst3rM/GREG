@@ -1,5 +1,23 @@
 <template>
-    <el-row class="form-container">
+    <el-steps :active="active" align-center>
+        <el-step title="Step 1" description="Set Options" />
+        <el-step title="Step 2" description="Review" />
+        <el-step title="Step 3" description="Publish" />
+    </el-steps>
+    <el-carousel ref="carousel" arrow="never" height="700px" :autoplay="false" indicator-position="none">
+        <el-carousel-item name="options">
+            <h1>Options</h1>
+        </el-carousel-item>
+        <el-carousel-item name="review">
+            <h1>Review</h1>
+        </el-carousel-item>
+        <el-carousel-item name="publish">
+            <h1>Publish</h1>
+        </el-carousel-item>
+    </el-carousel>
+    <el-button @click="prev">Prev</el-button>
+    <el-button type="primary" @click="next">Next</el-button>
+    <!-- <el-row class="form-container">
         <el-col :span="12">
             <el-form label-position="top" ref="ruleFormRef" :model="ruleForm" :rules="rules" size="large" status-icon>
                 <el-form-item label="Api Function Name" prop="func_name">
@@ -40,8 +58,7 @@
                 </div>
             </div>
         </el-col>
-    </el-row>
-
+    </el-row> -->
 </template>
 
 <script lang="ts" setup>
@@ -49,12 +66,27 @@ import { reactive, ref } from 'vue'
 import type { FormInstance, FormRules, UploadProps } from 'element-plus'
 import axios from "axios";
 import { Auth } from 'aws-amplify';
+import { ElNotification } from 'element-plus'
 
 const ruleFormRef = ref<FormInstance>()
 
 const fileList = ref<File[]>([])
 
+const active = ref(1)
+
+const carousel = ref(null)
+
 let code = ref([])
+
+const next = () => {
+    if (active.value++ > 2) active.value = 3
+    carousel.value.setActiveItem(active.value-1)
+}
+
+const prev = () => {
+    if (active.value-- <= 1) active.value = 1
+    carousel.value.setActiveItem(active.value - 1)
+}
 
 const ruleForm = reactive({
     func_name: '',
@@ -104,6 +136,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         if (valid) {
             Auth.currentSession().then((session) => {
                 axios.defaults.headers.common['Authorization'] = `Bearer ${session.getAccessToken().getJwtToken()}`;
+                axios.defaults.headers.common['Content-Type'] = 'application/json';
             });
             axios
                 .post('/createLambdaFunction', {
@@ -112,13 +145,25 @@ const submitForm = async (formEl: FormInstance | undefined) => {
                     funcHandler: ruleForm.handler_name
                 })
                 .then((response) => {
-                    console.log(response);
+                    ElNotification({
+                        title: 'Success',
+                        message: response.data,
+                        type: 'success',
+                    })
                 }, (error) => {
-                    console.log(error);
+                    ElNotification({
+                        title: 'Error',
+                        message: error.response.data,
+                        type: 'error',
+                    })
                 });
 
         } else {
-            console.log('error submit!', fields)
+            ElNotification({
+                title: 'Error',
+                message: 'Please fill in all the required fields',
+                type: 'error',
+            })
         }
     })
 }

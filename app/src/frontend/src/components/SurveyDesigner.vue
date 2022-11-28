@@ -7,7 +7,7 @@
                         <el-popover v-for="tool in primaryToolbox" placement="right" :title="tool.name" :width="200"
                             trigger="hover" :content="tool.content">
                             <template #reference>
-                                <el-menu-item :index="tool.id" @click="add_item">
+                                <el-menu-item :disabled="appStore.getNumberOfPages === 0 ? true: false" :index="tool.id" @click="add_item">
                                     <span class="material-icons-outlined">{{ tool.type }}</span>
                                 </el-menu-item>
                             </template>
@@ -16,7 +16,7 @@
                         <el-popover v-for="tool in secondaryToolbox" placement="right" :title="tool.name" :width="200"
                             trigger="hover" :content="tool.content">
                             <template #reference>
-                                <el-menu-item :index="tool.id" @click="add_item">
+                                <el-menu-item :disabled="appStore.getNumberOfPages === 0 ? true: false" :index="tool.id" @click="add_item">
                                     <span class="material-icons-outlined">
                                         {{ tool.type }}
                                     </span>
@@ -27,22 +27,30 @@
                 </el-col>
                 <el-col class="designer" :span="21">
                     <DesignerHeader v-if="appStore.getNumberOfPages !== 0" />
-                    <SurveyPage v-if="appStore.getNumberOfPages !== 0" @deleteQuestion="onDeleteQuestion"
-                        @saveChanges="onSaveChanges" :questions="{ ...questions }" :numOfQuestions="questions.length" />
+                    <SurveyPage ref="page1" v-if="appStore.getNumberOfPages !== 0" @deleteQuestion="onDeleteQuestion"
+                        @saveChanges="onSaveChanges" :questions="{ ...questions }" />
                     <el-empty v-if="appStore.getNumberOfPages === 0"
                         description="Click The Button Below To Get Started">
                         <el-button type="primary" @click="addPage">Add A Page</el-button>
                     </el-empty>
                 </el-col>
                 <el-row class="submit-survey-container">
-                    <el-button @click="createSurvey" v-if="appStore.getNumberOfPages !== 0" class="create-survey">
-                        Create Survey
-                    </el-button>
+                    <el-button-group>
+                        <el-button :disabled="questions.length === 0 ? true : false" @click="saveSurvey"
+                            v-if="appStore.getNumberOfPages !== 0" class="create-survey">
+                            Save
+                        </el-button>
+                        <el-button :disabled="questions.length === 0 ? true : false" @click="createSurvey"
+                            v-if="appStore.getNumberOfPages !== 0" class="create-survey">
+                            Create
+                        </el-button>
+                    </el-button-group>
                 </el-row>
             </el-row>
         </el-tab-pane>
         <el-tab-pane label="Preview" name="second">
-            <div id="survey"></div>
+            <div v-if="appStore.getNumberOfPages !== 0" id="survey"></div>
+            <el-empty v-else></el-empty>
         </el-tab-pane>
         <el-tab-pane label="Logic" name="third"></el-tab-pane>
         <el-tab-pane label="JSON Editor" name="fourth"></el-tab-pane>
@@ -63,6 +71,7 @@ import Carousel from "./Carousel.vue";
 import Boolean from "./Boolean.vue";
 import Ranking from "./Ranking.vue";
 import ImagePicker from "./ImagePicker.vue";
+import Dropdown from "./Dropdown.vue";
 import toolbox1 from "../assets/toolbox1.json";
 import toolbox2 from "../assets/toolbox2.json";
 import { Auth } from 'aws-amplify';
@@ -98,7 +107,8 @@ export default {
         Carousel,
         Boolean,
         Ranking,
-        ImagePicker
+        ImagePicker,
+        Dropdown
     },
     setup() {
         const appStore = useAppStore();
@@ -119,6 +129,7 @@ export default {
             activeTab: ref('first'),
             primaryToolbox: toolbox1,
             secondaryToolbox: toolbox2,
+            saveDisabled: true,
         }
     },
     methods: {
@@ -141,6 +152,11 @@ export default {
             }).catch((error) => {
                 console.log(error);
             });
+        },
+        saveSurvey() {
+            for (let i = 0; i < this.questions.length; i++) {
+                this.$refs.page1.$refs[i][0].save();
+            }
         },
         addPage() {
             this.idx += 1;
@@ -168,7 +184,7 @@ export default {
                     this.questions.push(Checkbox);
                     break
                 case "3":
-                    console.log('dropdown')
+                    this.questions.push(Dropdown);
                     break
                 case "4":
                     this.questions.push(Carousel);

@@ -2,6 +2,7 @@ package com.coen424.survey.surveyproject.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -15,6 +16,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -30,7 +32,9 @@ public class CustomSecurityConfiguration {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests(authorize -> authorize
-//                        .antMatchers("/api/**").permitAll()
+                        .antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
+                        .antMatchers(HttpMethod.GET, "/api/v1/getResultsForSharedForm").permitAll()
+                        .antMatchers(HttpMethod.GET, "/api/v1/getAllSharedForms").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
@@ -64,7 +68,7 @@ public class CustomSecurityConfiguration {
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
             String role = (String) jwt.getClaims().get("cognito:groups");
-//            System.out.println(Arrays.toString(jwt.getClaims().keySet().toArray()));
+            System.out.println(Arrays.toString(jwt.getClaims().keySet().toArray()));
             return role != null ? List.of(new SimpleGrantedAuthority(role)) : List.of();
         });
         return jwtAuthenticationConverter;

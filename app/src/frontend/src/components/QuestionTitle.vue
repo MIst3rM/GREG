@@ -5,8 +5,7 @@
                 <el-input v-model="question" size="large" placeholder="Question" />
             </el-form-item>
             <el-form-item class="status">
-                <!-- <span v-if="saving" class="ping"></span> -->
-                <span class="ping"></span>
+                <span v-if="saving" class="ping"></span>
             </el-form-item>
         </el-form>
     </el-row>

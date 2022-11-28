@@ -20,6 +20,12 @@ public class Forms {
 
     private Map<String, List<String>> questions;
 
+    private String status;
+
+    private String created_at;
+
+    private String last_modified_at;
+
     @DynamoDbPartitionKey
     public String getUser_id() {
         return user_id;
@@ -61,6 +67,30 @@ public class Forms {
         this.description = description;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
+    }
+
+    public String getLast_modified_at() {
+        return last_modified_at;
+    }
+
+    public void setLast_modified_at(String last_modified_at) {
+        this.last_modified_at = last_modified_at;
+    }
+
     @Override
     public String toString() {
         return "Forms{" +
@@ -69,6 +99,9 @@ public class Forms {
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", questions=" + questions +
+                ", status='" + status + '\'' +
+                ", created_at='" + created_at + '\'' +
+                ", last_modified_at='" + last_modified_at + '\'' +
                 '}';
     }
 }

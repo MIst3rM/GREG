@@ -12,6 +12,8 @@ import Boolean from "./Boolean.vue";
 import Ranking from "./Ranking.vue";
 import ImagePicker from "./ImagePicker.vue";
 import ApiForm from "./ApiForm.vue";
+import SurveyGallery from "./SurveyGallery.vue";
+import Dropdown from "./Dropdown.vue";
 
 export {
   Header,
@@ -28,5 +30,7 @@ export {
   Ranking,
   ImagePicker,
   ApiForm,
+  SurveyGallery,
+  Dropdown,
 };
 
