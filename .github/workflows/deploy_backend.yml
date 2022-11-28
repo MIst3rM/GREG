@@ -1,0 +1,60 @@
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ "misterm" ]
+  pull_request:
+    branches: [ "misterm" ]
+
+# Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./app/src/backend
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'corretto'
+    - name: Setup gradle
+      uses: gradle/gradle-build-action@v3
+    - name: Run build with Gradle Wrapper
+      run: ./gradlew build -x test
+    - name: Upload JAR
+      uses: actions/upload-artifact@v2
+      with: 
+        name: artifact
+        path: ./build/libs/surveyproject-0.0.1-SNAPSHOT.jar
+        
+  deploy:
+    needs: build
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Download JAR
+        uses: actions/download-artifact@v2
+        with: 
+          name: artifact
+      
+      # Deploy the artifact (JAR) into AWS Beanstalk
+      
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v13
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          use_existing_version_if_available: false
+          application_name: surveyadvisorbackend
+          environment_name: Surveyadvisorbackend-env
+          version_label: ${{github.SHA}}
+          region: us-east-1
+          deployment_package: surveyproject-0.0.1-SNAPSHOT.jar
