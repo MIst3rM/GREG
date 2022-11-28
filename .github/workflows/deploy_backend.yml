@@ -29,36 +29,32 @@ jobs:
       uses: gradle/gradle-build-action@v2
     - name: Run build with Gradle Wrapper
       run: ./gradlew build -x test
-    - name: Print directory
-      run: |
-        ls build
-        ls build/libs
-#     - name: Upload JAR
-#       uses: actions/upload-artifact@v2
-#       with: 
-#         name: artifact
-#         path: ./build/libs/surveyproject-0.0.1-SNAPSHOT.jar
+    - name: Upload JAR
+      uses: actions/upload-artifact@v2
+      with: 
+        name: artifact
+        path: ./build/surveyproject-0.0.1-SNAPSHOT.jar
         
-#   deploy:
-#     needs: build
-#     name: Deploy
-#     runs-on: ubuntu-latest
-#     steps: 
-#       - name: Download JAR
-#         uses: actions/download-artifact@v2
-#         with: 
-#           name: artifact
+  deploy:
+    needs: build
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Download JAR
+        uses: actions/download-artifact@v2
+        with: 
+          name: artifact
       
-#       # Deploy the artifact (JAR) into AWS Beanstalk
+      # Deploy the artifact (JAR) into AWS Beanstalk
       
-#       - name: Deploy to EB
-#         uses: einaregilsson/beanstalk-deploy@v13
-#         with:
-#           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#           use_existing_version_if_available: false
-#           application_name: surveyadvisorbackend
-#           environment_name: Surveyadvisorbackend-env
-#           version_label: ${{github.SHA}}
-#           region: us-east-1
-#           deployment_package: surveyproject-0.0.1-SNAPSHOT.jar
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v13
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          use_existing_version_if_available: false
+          application_name: surveyadvisorbackend
+          environment_name: Surveyadvisorbackend-env
+          version_label: ${{github.SHA}}
+          region: us-east-1
+          deployment_package: surveyproject-0.0.1-SNAPSHOT.jar
