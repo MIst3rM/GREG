@@ -20,6 +20,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Create .env file
+      run: |
+        touch .env
+        echo "VITE_COGNITO_CLIENT_ID=${{ secrets.VITE_COGNITO_CLIENT_ID }}" >> .env
+        echo "VITE_COGNITO_USERPOOL_ID=${{ secrets.VITE_COGNITO_USERPOOL_ID }}" >> .env
+        echo "VITE_COGNITO_APP_DOMAIN=${{ secrets.VITE_COGNITO_APP_DOMAIN }}" >> .env
+        echo "VITE_COGNITO_REDIRECT_URI=${{ secrets.VITE_COGNITO_REDIRECT_URI }}" >> .env
+        echo "VITE_APP_URL=${{ secrets.VITE_APP_URL }}" >> .env
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
