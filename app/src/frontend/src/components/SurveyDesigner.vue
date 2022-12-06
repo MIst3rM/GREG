@@ -355,7 +355,7 @@ export default {
                     title: this.appStore.getTitle,
                     description: this.appStore.getDescription,
                     questions: this.surveyQuestions,
-                    status: this.publish ? 'ACTIVE' : '"EDITING"',
+                    status: this.publish ? "ACTIVE" : "EDITING",
                     created_at: new Date().toISOString(),
                     last_modified_at: new Date().toISOString(),
                     published_at: this.surveyDates[0],
