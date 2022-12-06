@@ -20,24 +20,6 @@
             </template>
             <SurveyGallery @shared="onShared" :surveys="surveys" />
         </el-tab-pane>
-        <!-- <el-tab-pane name="api">
-            <template #label>
-                <span class="custom-tabs-label">
-                    <lord-icon src="https://cdn.lordicon.com/ktybrenb.json" trigger="hover"
-                        style="width:32px;height:32px">
-                    </lord-icon>
-                </span>
-            </template>
-            <el-container class="api-outer-container">
-                <el-main class="api-inner-container">
-                    <el-empty v-if="public_apis.length === 0" description="Share Your Survey Results Publicly">
-                        <el-button @click="createApi" type="primary">Click here to start
-                        </el-button>
-                    </el-empty>
-                    <ApiForm v-if="public_apis.length !== 0" />
-                </el-main>
-            </el-container>
-        </el-tab-pane> -->
     </el-tabs>
 </template> 
 
@@ -133,14 +115,4 @@ export default {
 .custom-tabs-label {
     height: 30px;
 }
-
-
-/* .tabs {
-    height: calc(100vh - 100px - 20px);
-    position: absolute;
-} */
-
-/* .el-tab-pane {
-    width: calc(100vw - 178px);
-} */
 </style>
