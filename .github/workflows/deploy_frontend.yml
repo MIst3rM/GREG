@@ -25,6 +25,7 @@ jobs:
       with:
         node-version: '16.x'
         cache: 'npm'
+        cache-dependency-path: ./app/src/frontend/yarn.lock
 
     - name: Install Dependencies
       run: npm install
