@@ -71,6 +71,8 @@
                     <h3>Survey Complete</h3>
                     <el-input v-model="htmlArea" :autosize="{ minRows: 3, maxRows: 5 }" type="textarea"
                         placeholder="Custom HTML Here (Optional)" />
+                    <el-divider />
+                    <el-checkbox v-model="publish" label="Publish Survey" size="large" />
                     <el-button @click="closeDrawer" :style="{ marginTop: '20px' }" type="primary">Save</el-button>
                 </el-drawer>
             </el-row>
@@ -292,6 +294,7 @@ export default {
                 new Date(Date.now() + 604800000 - tzoffset).toISOString().slice(0, -1)
             ],
             datesSet: false,
+            publish: false,
             error_msg: '',
             surveyQuestions: {},
             htmlArea: '',
@@ -352,7 +355,7 @@ export default {
                     title: this.appStore.getTitle,
                     description: this.appStore.getDescription,
                     questions: this.surveyQuestions,
-                    status: "EDITING",
+                    status: this.publish ? 'ACTIVE' : '"EDITING"',
                     created_at: new Date().toISOString(),
                     last_modified_at: new Date().toISOString(),
                     published_at: this.surveyDates[0],
