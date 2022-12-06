@@ -8,7 +8,7 @@
         <el-col><span>Height Adjuster</span><el-slider v-model="height" :min="300" :max="800" /></el-col>
     </el-row>
     <el-upload v-if="!showVideo" v-model:file-list="filelist" class="upload-container" ref="upload" drag show-file-list
-        :auto-upload="false" :limit="1" :on-exceed="handleExceed" action="https://backend-env.eba-ndzmkia6.us-east-1.elasticbeanstalk.com/api/v1/uploadVideo"
+        :auto-upload="false" :limit="1" :on-exceed="handleExceed" action="https://survey-advisor.cloud/api/v1/uploadVideo"
         :headers="headers" :http-request="request">
         <el-icon class="el-icon--upload">
             <upload-filled />
