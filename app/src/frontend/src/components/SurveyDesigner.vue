@@ -96,9 +96,9 @@
 </template> 
 
 <script lang="ts">
-import "survey-core/modern.min.css";
-import { StylesManager, SurveyTriggerSetValue, Model } from "survey-core";
-// StylesManager.applyTheme("modern");
+import "survey-core/defaultV2.css";
+import { StylesManager } from "survey-core";
+StylesManager.applyTheme("defaultV2");
 import { Survey } from 'survey-knockout-ui';
 import { uuid } from 'vue3-uuid';
 import { ElNotification } from 'element-plus'
