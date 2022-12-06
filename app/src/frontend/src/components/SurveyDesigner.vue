@@ -72,7 +72,7 @@
                     <el-input v-model="htmlArea" :autosize="{ minRows: 3, maxRows: 5 }" type="textarea"
                         placeholder="Custom HTML Here (Optional)" />
                     <el-divider />
-                    <el-checkbox v-model="publish" label="Publish Survey" size="large" />
+                    <el-row><el-checkbox v-model="publish" label="Publish Survey" size="larger" /></el-row>
                     <el-button @click="closeDrawer" :style="{ marginTop: '20px' }" type="primary">Save</el-button>
                 </el-drawer>
             </el-row>
