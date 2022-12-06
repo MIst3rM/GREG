@@ -35,6 +35,7 @@ public class CustomSecurityConfiguration {
                         .antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
                         .antMatchers(HttpMethod.GET, "/api/v1/getResultsForSharedForm").permitAll()
                         .antMatchers(HttpMethod.GET, "/api/v1/getAllSharedForms").permitAll()
+                        .antMatchers(HttpMethod.GET, "/api/v1/generateAPIKey").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
@@ -68,7 +69,7 @@ public class CustomSecurityConfiguration {
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
             String role = (String) jwt.getClaims().get("cognito:groups");
-            System.out.println(Arrays.toString(jwt.getClaims().keySet().toArray()));
+//            System.out.println(Arrays.toString(jwt.getClaims().keySet().toArray()));
             return role != null ? List.of(new SimpleGrantedAuthority(role)) : List.of();
         });
         return jwtAuthenticationConverter;

@@ -1,10 +1,14 @@
 <template>
     <el-row justify="end">
-        <el-button-group>
-            <el-button type="primary">Duplicate</el-button>
-            <el-button type="info">Settings</el-button>
-            <el-button type="danger">Delete</el-button>
-        </el-button-group>
+        <el-icon class="page-settings" :size="25">
+            <CopyDocument />
+        </el-icon>
+        <el-icon class="page-settings" :size="25">
+            <Setting />
+        </el-icon>
+        <el-icon class="page-settings" :size="25">
+            <Delete />
+        </el-icon>
     </el-row>
     <el-row justify="center">
         <el-col class="header-component">
@@ -15,9 +19,9 @@
                 placeholder="description" />
         </el-col>
     </el-row>
-    <el-row justify="center">
-        <el-col :span="18" class="page">
-            <component v-for="(question, index) in questions" :is="{ ...question }" :ref="index"
+    <el-row justify="center" :style="{ 'height': numOfQuestions === 0 ? '300px' : 'unset' }">
+        <el-col :style="{ 'backgroundColor': numOfQuestions === 0 ? 'transparent' : 'white' }" :span="18" class="page">
+            <component v-for="(question, index) in questions" :is="question" :ref="index"
                 :num="parseInt(index) + 1" @deleteQuestion="onDeleteQuestion" @saveChanges="onSaveChanges">
             </component>
         </el-col>
@@ -25,6 +29,7 @@
 </template>
 
 <script lang="ts">
+import { CopyDocument } from '@element-plus/icons-vue';
 import { useAppStore } from '../store/app';
 export default {
     name: 'SurveyPage',
@@ -33,7 +38,11 @@ export default {
         questions: {
             type: Array,
             default: []
-        }
+        },
+        numOfQuestions: {
+            type: Number,
+            default: 0
+        },
     },
     setup() {
         const appStore = useAppStore();
@@ -59,15 +68,20 @@ export default {
 </script>
 
 <style>
+
+.page-settings{
+    margin-right: 10px;
+    cursor: pointer;
+}
 .pageName {
-    width: 25%;
+    width: 60%;
     height: 50px;
     font-size: 20px;
     border-style: none;
 }
 
 .pageDesc {
-    width: 25%;
+    width: 60%;
     height: 40px;
     border-style: none;
 }

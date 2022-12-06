@@ -1,45 +1,47 @@
 <template>
-    <QuestionTitle :num="num" />
-    <el-row class="rating-container">
-        <ul class="list" :class="{ 'disabled': disabled }">
-            <li :key="star" v-for="star in maxstars" @mouseover="hoverStar(star)" @mouseleave="mouseLeftStar"
-                :class="[{ 'active': star <= stars }]" @click="rate(star)" class="star">
-                <font-awesome-icon :class="`fa-${starsize}`" :icon="[star <= stars ? 'fas' : 'far', 'star']" />
-            </li>
-        </ul>
-        <span class="description" v-if="hasdescription && star_desc" :class="star_desc.class">{{ star_desc.text
-        }}</span>
-        <span v-else-if="!star_desc" class="description">No Description</span>
+    <QuestionTitle :saving="saving" :num="num" ref="questionTitle" />
+    <el-row class="ranking-container">
+        <draggable :list="list" v-bind="dragOptions" :component-data="{
+            tag: 'div',
+            type: 'transition-group',
+            name: 'fade',
+        }" @start="drag = true" @end="drag = false" item-key="id">
+            <template #item="{ element, index }">
+                <el-col :key="index" class="answers">
+                    <span v-if="!element.addremove" class="minus" :key="index + '-1'">
+                        <span class="material-icons-outlined minus-inner" v-on:click="removeItem(index)"
+                            :key="index + '-1.1'">
+                            remove_circle
+                        </span>
+                    </span>
+                    <span v-else class="plus" :key="index + '-2'">
+                        <span class="material-icons-outlined plus-inner" v-on:click="addItem(element.name)"
+                            :key="index + '-2.1'">
+                            add_circle
+                        </span>
+                    </span>
+                    <el-icon :key="index + '-3'" :size="35">
+                        <Remove :key="index + '-3.1'" />
+                    </el-icon>
+                    <el-input v-model="element.binding" class="choice" size="large" :placeholder="element.name"
+                        :key="index + '-4'" />
+                </el-col>
+            </template>
+        </draggable>
     </el-row>
-    <el-row>
-        <el-tag v-for="tag in dynamicTags" :key="tag" class="mx-1" closable :disable-transitions="false"
-            @close="handleClose(tag)">
-            {{ tag }}
-        </el-tag>
-        <el-input v-if="inputVisible" ref="InputRef" v-model="inputValue" class="ml-1 w-20" size="small"
-            @keyup.enter="handleInputConfirm" @blur="handleInputConfirm" />
-        <el-button v-else class="button-new-tag ml-1" size="small" @click="showInput">
-            + New Tag
-        </el-button>
-    </el-row>
-    <DeleteQuestion :num="num" @deleteQuestion="onDeleteQuestion" />
+    <DeleteQuestion ref="deleteQuestion" :num="num" @deleteQuestion="onDeleteQuestion" />
 </template>
 
 <script lang="ts">
 import QuestionTitle from './QuestionTitle.vue'
 import DeleteQuestion from './DeleteQuestion.vue'
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { fas } from "@fortawesome/free-solid-svg-icons";
-import { far } from "@fortawesome/free-regular-svg-icons";
-library.add(fas);
-library.add(far);
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-
-import { ref } from 'vue'
-import { ElInput } from 'element-plus'
+import draggable from 'vuedraggable'
+import { useAppStore } from '../store/app';
+const answers = ["item1", "item2", "item3", "item4", "None", "Other (describe)"];
 
 export default {
     name: 'Ranking',
+    emits: ['deleteQuestion', 'saveChanges'],
     props: {
         num: {
             type: Number,
@@ -47,195 +49,77 @@ export default {
             default: 0
         },
     },
-    data() {
-        return {
-            InputRef:ref<InstanceType<typeof ElInput>>(),
-            dynamicTags: ['Tag 1', 'Tag 2', 'Tag 3'],
-            inputValue: '',
-            inputVisible: false,
-            stars: this.star,
-            star_desc: this.getRatingDesc(this.star),
-            star: 0,
-            maxstars: 5,
-            hasdescription: true,
-            ratingdescription: [
-                {
-                    text: "Poor",
-                    class: "star-poor"
-                },
-                {
-                    text: "Below Average",
-                    class: "star-belowAverage"
-                },
-                {
-                    text: "Average",
-                    class: "star-average"
-                },
-                {
-                    text: "Good",
-                    class: "star-good"
-                },
-                {
-                    text: "Excellent",
-                    class: "star-excellent"
-                }
-            ],
-            starsize: "1x",
-            disabled: false,
-        }
-    },
     components: {
+        draggable,
         QuestionTitle,
         DeleteQuestion,
-        FontAwesomeIcon
+    },
+    setup() {
+        const appStore = useAppStore();
+        return {
+            appStore
+        }
+    },
+    data() {
+        return {
+            saving: false,
+            drag: false,
+            list: answers.map((name, index) => {
+                return { name, order: index + 1, addremove: index > 2 ? 1 : 0, binding: "" };
+            }),
+        }
     },
     methods: {
-        handleClose(tag: string) {
-            this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1)
+        removeItem(idx: number) {
+            this.list.splice(idx, 1);
         },
-        showInput() {
-            this.inputVisible = true
-            this.$nextTick(() => {
-                console.log(this.InputRef)
-            })
-        },
-        handleInputConfirm() {
-            if (this.inputValue) {
-                this.dynamicTags.push(this.inputValue)
-            }
-            this.inputVisible = false
-            this.inputValue = ''
+        addItem(name: string) {
+            this.list.find((item) => item.name === name).addremove = 0;
+            this.list.find((item) => item.addremove === 1) ? "" : (this.initialLength++, this.list.push({ name: "item" + this.initialLength, order: this.initialLength, addremove: 1, binding: "" }));
         },
         onDeleteQuestion(idx: number) {
             this.$emit('deleteQuestion', idx)
         },
-        rate(star: number) {
-            if (this.disabled) {
-                return;
+        save() {
+            let question = {
+                "type": "ranking",
+                "name": "question" + this.num,
+                "isRequired": this.$refs.deleteQuestion.required,
+                "title": this.$refs.questionTitle.question,
+                "choices": []
             }
-            if (star <= this.maxstars && star >= 0) {
-                this.stars = this.stars === star ? star - 1 : star;
-            }
-        },
-        hoverStar(star: number) {
-            if (this.disabled) {
-                return;
-            }
-            if (star <= this.maxstars && star >= 0) {
-                this.star_desc = this.ratingdescription[star - 1];
-            }
-        },
-        mouseLeftStar() {
-            if (this.disabled) {
-                return;
-            }
-            if (this.stars) {
-                this.star_desc = this.ratingdescription[this.stars - 1];
-                return this.star_desc;
+            this.list.forEach((item) => {
+                if (item.addremove === 0) {
+                    question.choices.push(item.binding);
+                }
+            })
+            if (this.appStore.findElement(this.num - 1)) {
+                this.appStore.updateElement(this.num - 1, question);
             } else {
-                this.star_desc = "";
+                this.appStore.addQuestion("Page1", question);
             }
-        },
-        getRatingDesc(star: number) {
-            if (star) {
-                this.star_desc = this.ratingdescription[star - 1];
-            }
-            return this.star_desc;
+            this.saving = true;
+            setTimeout(() => this.saving = false, 4000);
+            this.$emit('saveChanges');
         }
-    }
+    },
+    computed: {
+        dragOptions() {
+            return {
+                animation: 250,
+                group: "people",
+                disabled: false,
+                ghostClass: "ghost"
+            };
+        },
+    },
 }
 </script>
 
-<style lang="scss" scoped>
-.rating-container {
-    justify-content: center;
+<style scoped>
+.ranking-container {
     align-items: center;
     margin-bottom: 10px;
-}
-
-$active-color: #f3d23e;
-$white-color: #fff;
-$poor-color: rgb(186, 186, 186);
-$below-average-color: rgb(245, 195, 87);
-$average-color: rgb(255, 172, 90);
-$good-color: rgb(193, 215, 89);
-$excellent-color: rgb(72, 150, 77);
-$no-star-desc-color: rgb(00, 00, 00);
-
-.description {
-    width: 130px;
-    padding: 5px;
-    border-radius: 2px;
-    font-size: 13px;
-    text-align: center;
-    font-weight: bold;
-    transition: 0.2s;
-    line-height: 25px;
-}
-
-ul.list li,
-span {
-    display: inline-block;
-    margin: 2px;
-}
-
-.list {
-    padding: 0;
-    list-style-type: none;
-
-    &:hover {
-        .star {
-            color: $active-color;
-        }
-    }
-}
-
-.list.disabled {
-    &:hover {
-        .star {
-            color: black;
-            cursor: default;
-        }
-
-        .star.active {
-            color: $active-color;
-        }
-    }
-}
-
-.star {
-    cursor: pointer;
-
-    &:hover {
-        &~.star {
-            &:not(.active) {
-                color: inherit;
-            }
-        }
-    }
-}
-
-.active {
-    color: $active-color;
-}
-
-.star-poor {
-    background: $poor-color;
-}
-
-.star-belowAverage {
-    background: $below-average-color;
-}
-
-.star-average {
-    background: $active-color;
-}
-
-.star-good {
-    background: $good-color;
-}
-
-.star-excellent {
-    background: $excellent-color;
+    padding: 0 0 0 50px;
 }
 </style>

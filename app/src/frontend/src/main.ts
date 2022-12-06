@@ -14,7 +14,7 @@ import App from "./App.vue";
 import axios from "axios";
 import UUID from "vue3-uuid";
 
-import { Home, Profile, Report, SharedResults } from "./views";
+import { Home, Profile, SharedResults } from "./views";
 import { SurveyDesigner, SurveyCreator } from "./components";
 
 axios.defaults.baseURL = "http://localhost:8090/api/v1";
@@ -24,7 +24,6 @@ const routes = [
   { path: "/profile", component: Profile },
   { path: "/survey-designer", component: SurveyDesigner },
   { path: "/survey-creator", component: SurveyCreator },
-  { path: "/report", component: Report },
   { path: "/results", component: SharedResults },
 ];
 
@@ -37,6 +36,7 @@ const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 
 const app = createApp(App);
+app.config.warnHandler = () => null;
 app.use(router);
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component);

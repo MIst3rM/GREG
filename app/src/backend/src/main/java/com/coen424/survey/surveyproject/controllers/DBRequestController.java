@@ -1,19 +1,22 @@
 package com.coen424.survey.surveyproject.controllers;
 
 import com.coen424.survey.surveyproject.database.Request;
-import com.coen424.survey.surveyproject.models.Form_Submissions;
 import com.coen424.survey.surveyproject.models.Forms;
-import com.coen424.survey.surveyproject.models.SharedResults;
 import com.coen424.survey.surveyproject.utils.RequestOptions;
 import com.coen424.survey.surveyproject.utils.Table;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.access.prepost.PreAuthorize;
-
-import java.util.ArrayList;
+import software.amazon.awssdk.enhanced.dynamodb.Expression;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +24,8 @@ import java.util.Map;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 public class DBRequestController {
-    @PostMapping(value = "/api/v1/getForm")
+    @GetMapping(value = "/api/v1/getForm")
     public Forms getForm(@AuthenticationPrincipal Jwt jwt, String form_id) {
-        System.out.println(form_id);
         RequestOptions options = new RequestOptions.RequestBuilder()
                 .setPartition_key(jwt.getClaimAsString("sub")) // user_id
                 .setSort_key(form_id)
@@ -34,17 +36,25 @@ public class DBRequestController {
     }
 
     @GetMapping(value = "/api/v1/getAllForms")
-    public List<Forms> getAllForms(@AuthenticationPrincipal Jwt jwt) {
+    public MappingJacksonValue getAllForms(@AuthenticationPrincipal Jwt jwt) {
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.serializeAll();
+
+        FilterProvider filters = new SimpleFilterProvider().addFilter("formsFilter", filter);
+
         RequestOptions options = new RequestOptions.RequestBuilder()
                 .setPartition_key(jwt.getClaimAsString("sub")) // user_id
                 .setTable_type(Table.FORMS)
                 .build();
         Request<Forms> request = new Request<>();
-        return request.getAll(options);
+        List<Forms> surveys = request.getAll(options);
+        MappingJacksonValue mapping = new MappingJacksonValue(surveys);
+        mapping.setFilters(filters);
+        return mapping;
     }
 
     @PostMapping(value = "/api/v1/createForm")
     public String createForm(@AuthenticationPrincipal Jwt jwt, @RequestBody String form) {
+        System.out.println(form);
         RequestOptions options = new RequestOptions.RequestBuilder()
                 .setTable_type(Table.FORMS)
                 .build();
@@ -60,7 +70,7 @@ public class DBRequestController {
         return "Form created successfully";
     }
 
-    @PostMapping(value = "/api/v1/deleteForm")
+    @DeleteMapping(value = "/api/v1/deleteForm")
     public String deleteForm(@AuthenticationPrincipal Jwt jwt, String form_id) {
         RequestOptions options = new RequestOptions.RequestBuilder()
                 .setPartition_key(jwt.getClaimAsString("sub")) // user_id
@@ -72,80 +82,73 @@ public class DBRequestController {
         return "Form deleted successfully";
     }
 
-    @GetMapping(value = "/api/v1/getAllSharedForms")
-    public List<Forms> getAllSharedForms() {
-        // First get a list of surveys that are shared publicly
+    @GetMapping(value = "/api/v1/getNumberOfSubmissions")
+    public int getNumberOfSubmissions(@AuthenticationPrincipal Jwt jwt, String form_id) {
         RequestOptions options = new RequestOptions.RequestBuilder()
-                .setTable_type(Table.SHARED_RESULTS)
+                .setPartition_key(jwt.getClaimAsString("sub")) // user_id
+                .setSort_key(form_id)
+                .setTable_type(Table.FORMS)
                 .build();
-        Request<SharedResults> request = new Request<>();
-        List<SharedResults> res = request.scan(options);
+        Request<Forms> request = new Request<>();
+        Forms survey = request.get(options);
+        return survey.getSubmissions_count();
+    }
+    @PutMapping(value = "/api/v1/setShareable")
+    public String setShareable(@AuthenticationPrincipal Jwt jwt, @RequestBody String requestBody) {
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(requestBody);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
 
-        // Now get the forms that are shared publicly
-        List<Forms> forms = new ArrayList<>();
-        res.forEach(form -> {
-            RequestOptions options2 = new RequestOptions.RequestBuilder()
-                    .setPartition_key(form.getUser_id())
-                    .setSort_key(form.getForm_id())
-                    .setTable_type(Table.FORMS)
-                    .build();
-            Request<Forms> request2 = new Request<>();
-            forms.add(request2.get(options2));
-        });
-        return forms;
+        RequestOptions options = new RequestOptions.RequestBuilder()
+                .setPartition_key(jwt.getClaimAsString("sub")) // user_id
+                .setSort_key(jsonObject.optString("form_id"))
+                .setTable_type(Table.FORMS)
+                .build();
+        Request<Forms> request = new Request<>();
+        Forms survey = request.get(options);
+
+        if(survey.getStatus().equalsIgnoreCase("expired")) {
+            survey.setSharedPublicly(jsonObject.optBoolean("sharedPublicly"));
+            request.update(options, survey);
+            try {
+                if(jsonObject.getBoolean("sharedPublicly")) {
+                    return "Form shared successfully";
+                } else {
+                    return "Form unshared successfully";
+                }
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }else{
+            return "Form is " + survey.getStatus().toLowerCase() +  ". It cannot be shared at this time.";
+        }
     }
 
-    @GetMapping(value = "/api/v1/getResultsForSharedForm")
-    public Map<String, Map<String, List<String>>> getResultsForShared(String form_id) {
-        //First find out if the form results are shared
+    @GetMapping(value = "/api/v1/getAllSharedForms")
+    public MappingJacksonValue getAllSharedForms() {
+        // First get a list of surveys that are shared publicly
+        Map<String, AttributeValue> expressionValues = new HashMap<>();
+        expressionValues.put(":value", AttributeValue.builder().bool(true).build());
+
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("form_id", "title", "description", "submissions_count", "status");
+
+        FilterProvider filters = new SimpleFilterProvider().addFilter("formsFilter", filter);
+
         RequestOptions options = new RequestOptions.RequestBuilder()
-                .setSort_key(form_id)
-                .setTable_type(Table.SHARED_RESULTS)
+                .setTable_type(Table.FORMS)
+                .setExpression(Expression.builder()
+                        .expression("sharedPublicly = :value")
+                        .expressionValues(expressionValues)
+                        .build())
+                .setAttributesToProject(new String[]{"form_id", "title", "description", "submissions_count"})
                 .build();
-        Request<SharedResults> request = new Request<>();
-        List<String> form_ids = new ArrayList<>();
-        request.scan(options).forEach(res -> {
-            form_ids.add(res.getForm_id());
-        });
-
-        //If the form results are shared, get all the results
-        if(form_ids.size() > 0) {
-
-            //Then get all the submissions for each form
-            RequestOptions options2 = new RequestOptions.RequestBuilder()
-                        .setPartition_key(form_id)
-                        .setTable_type(Table.FORM_SUBMISSIONS)
-                        .build();
-            Request<Form_Submissions> request2 = new Request<>();
-            List<Form_Submissions> submissions = new ArrayList<>(request2.getAll(options2));
-
-            //Then convert the submissions to a list of maps
-            Map<String, Map<String, List<String>>> results = new HashMap<>();
-            submissions.forEach(submission -> {
-                if (results.containsKey(submission.getForm_id())) {
-                    Map<String, List<String>> res = results.get(submission.getForm_id());
-                    submission.getAnswers().forEach((k, v) -> {
-                        if (res.containsKey(k)) {
-                            res.get(k).add(v);
-                        } else {
-                            List<String> list = new ArrayList<>();
-                            list.add(v);
-                            res.put(k, list);
-                        }
-                    });
-                } else {
-                    Map<String, List<String>> res = new HashMap<>();
-                    submission.getAnswers().forEach((k, v) -> {
-                        List<String> list = new ArrayList<>();
-                        list.add(v);
-                        res.put(k, list);
-                    });
-                    results.put(submission.getForm_id(), res);
-                }
-            });
-            return results;
-        }else{
-            return null;
-        }
+        Request<Forms> request = new Request<>();
+        List<Forms> surveys = request.scan(options);
+        MappingJacksonValue mapping = new MappingJacksonValue(surveys);
+        mapping.setFilters(filters);
+        return mapping;
     }
 }

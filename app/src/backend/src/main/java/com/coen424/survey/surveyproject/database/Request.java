@@ -5,7 +5,6 @@ import software.amazon.awssdk.enhanced.dynamodb.*;
 import software.amazon.awssdk.enhanced.dynamodb.model.*;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 
 import java.util.*;
@@ -98,48 +97,11 @@ public class Request<T> {
         try{
             DynamoDbTable<T> table = enhancedClient.table(options.getTable_type().getTableName(),  TableSchema.fromBean((Class<T>) options.getTable_type().getTableClass()));
 
-            AttributeValue att = AttributeValue.builder()
-                    .bool(true)
-                    .build();
-
-            AttributeValue att2 = null;
-            if(options.getSort_key() != null){
-                att2 = AttributeValue.builder()
-                        .s(options.getSort_key())
-                        .build();
-            }
-
-            Map<String, AttributeValue> expressionValues = new HashMap<>();
-            expressionValues.put(":value", att);
-
-            if(att2 != null){
-                expressionValues.put(":value2", att2);
-            }
-
-            Expression expression;
-            if(att2 != null) {
-                expression= Expression.builder()
-                        .expression("isShared = :value and form_id = :value2")
-                        .expressionValues(expressionValues)
-                        .build();
-            }else{
-                expression= Expression.builder()
-                        .expression("isShared = :value")
-                        .expressionValues(expressionValues)
-                        .build();
-            }
-
             ScanEnhancedRequest scanEnhancedRequest;
-            if(att2 != null) {
                 scanEnhancedRequest = ScanEnhancedRequest.builder()
-                    .filterExpression(expression)
-                        .attributesToProject("form_id")
+                    .filterExpression(options.getExpression())
+                        .attributesToProject(options.getAttributesToProject())
                         .build();
-            }else{
-                scanEnhancedRequest = ScanEnhancedRequest.builder()
-                        .filterExpression(expression)
-                        .build();
-            }
 
             return table.scan(scanEnhancedRequest).items().stream().toList();
 
@@ -147,5 +109,16 @@ public class Request<T> {
             System.err.println(e.getMessage());
         }
         return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void update(RequestOptions options, T item){
+        DynamoDbEnhancedClient enhancedClient = getEnhancedClient();
+        try {
+            DynamoDbTable<T> table = enhancedClient.table(options.getTable_type().getTableName(),  TableSchema.fromBean((Class<T>) options.getTable_type().getTableClass()));
+            table.updateItem(item);
+        } catch (DynamoDbException e) {
+            System.err.println(e.getMessage());
+        }
     }
 }

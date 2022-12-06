@@ -31,6 +31,8 @@ dependencies {
 	implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: '5.7.5'
 	implementation group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: '2.7.5'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+	implementation group: 'software.amazon.awssdk', name: 's3', version: '2.18.28'
+
 }
 
 bootJar {

@@ -1,14 +1,15 @@
 <template>
-    <QuestionTitle :num="num" />
+    <QuestionTitle :saving="saving" :num="num" ref="questionTitle" />
     <el-row class="image-picker">
-        <draggable :list="fileList" tag="transition-group" :component-data="{
+        <draggable :list="fileList" v-bind="dragOptions" :component-data="{
             tag: 'ul',
             class: 'parent-grid el-upload-list el-upload-list--picture-card',
             type: 'transition-group',
             name: 'fade',
         }" @start="drag = true" @end="drag = false" item-key="id">
             <template #item="{ element, index }">
-                <li class="el-upload-list__item" :class="(element.name, element.status === 'success' ? 'is-success': '')" tabindex="0"
+                <li class="el-upload-list__item"
+                    :class="(element.name, element.status === 'success' ? 'is-success' : '')" tabindex="0"
                     @click="selectImage(element)">
                     <img :src="element.url" class="el-upload-list__item-thumbnail" alt="" />
                     <label class="el-upload-list__item-status-label">
@@ -44,7 +45,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineProps, defineEmits } from 'vue'
+import { ref, defineProps, defineEmits, computed } from 'vue'
 import draggable from 'vuedraggable'
 import QuestionTitle from './QuestionTitle.vue'
 import DeleteQuestion from './DeleteQuestion.vue'
@@ -77,11 +78,22 @@ const fileList = ref<UploadUserFile[]>([
 
 const drag = ref(false)
 
+let saving = ref(false)
+
 const props = defineProps({
     num: {
         type: Number,
         required: true,
     },
+})
+
+const dragOptions = computed(() => {
+    return {
+        animation: 250,
+        group: "people",
+        disabled: false,
+        ghostClass: "ghost"
+    };
 })
 
 const emits = defineEmits(['deleteQuestion'])

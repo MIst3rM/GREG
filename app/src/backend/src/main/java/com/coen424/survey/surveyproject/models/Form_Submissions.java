@@ -14,7 +14,7 @@ public class Form_Submissions {
     private String form_id;
     private String respondent_id;
     private String user_id;
-    private Map<String, String> answers;
+    private Map<String, List<String>> answers;
 
     @DynamoDbPartitionKey
     public String getForm_id() {
@@ -43,11 +43,11 @@ public class Form_Submissions {
         this.user_id = user_id;
     }
 
-    public Map<String, String> getAnswers() {
+    public Map<String, List<String>> getAnswers() {
         return answers;
     }
 
-    public void setAnswers(Map<String, String> answers) {
+    public void setAnswers(Map<String, List<String>> answers) {
         this.answers = answers;
     }
 }

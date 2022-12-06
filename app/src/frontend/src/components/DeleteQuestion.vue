@@ -7,14 +7,11 @@
             <span v-else class="material-icons-outlined required" v-on:click="required = false">
                 toggle_on
             </span>
+            <p>required</p>
+            <lord-icon class="trash" v-on:click="$emit('deleteQuestion', num - 1)"
+                src="https://cdn.lordicon.com/kfzfxczd.json" trigger="hover" style="width:28px;height:28px">
+            </lord-icon>
         </el-col>
-        <p>required</p>
-        <el-col class="button-col" :span="1">
-            <span class="material-icons-outlined trash" v-on:click="$emit('deleteQuestion', num - 1)">
-                delete_forever
-            </span>
-        </el-col>
-        <p>delete</p>
     </el-row>
 </template>
 
@@ -38,37 +35,40 @@ export default {
 </script>
 
 <style scoped>
+.button-col {
+    display: contents;
+}
+
 p {
     display: unset;
     margin-block-start: unset;
     margin-block-end: unset;
     margin-inline-start: unset;
     margin-inline-end: unset;
-    margin-right: 10px;
+    margin: 0 5px 0 5px;
 }
 
 .not_required {
     color: #4a4a4a;
+    font-size: 28px;
+    cursor: pointer;
 }
 
 .required {
     color: #13ce66;
+    font-size: 28px;
+    cursor: pointer;
 }
 
 .buttons-container {
     justify-content: flex-end;
     font-size: 12px;
-    /* align-items: center; */
+    align-items: center;
+    padding: 5px;
 }
 
 .trash {
     font-size: 25px;
-    color: #F44336;
     cursor: pointer;
-}
-
-.trash:hover {
-    transition: 0.5s ease-in-out;
-    scale: 1.2;
 }
 </style>

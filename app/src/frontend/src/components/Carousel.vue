@@ -21,7 +21,7 @@
             </el-button>
         </el-button-group>
     </el-row>
-    <DeleteQuestion :num="num" @deleteQuestion="onDeleteQuestion" />
+    <DeleteQuestion ref="deleteQuestion" :num="num" @deleteQuestion="onDeleteQuestion" />
 </template>
 
 <script lang="ts">

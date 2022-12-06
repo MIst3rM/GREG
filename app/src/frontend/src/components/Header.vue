@@ -9,8 +9,7 @@
         <el-sub-menu v-if="isAuthenticated" index="3">
             <template #title>Account</template>
             <el-menu-item index="2-1" route="/profile">Profile</el-menu-item>
-            <el-menu-item index="2-2">Account Security</el-menu-item>
-            <el-menu-item index="2-3" @click="logout">Logout</el-menu-item>
+            <el-menu-item index="2-2" @click="logout">Logout</el-menu-item>
         </el-sub-menu>
         <template v-else>
             <el-menu-item index="/" @click="register">Register</el-menu-item>
@@ -23,6 +22,7 @@
 import logo from "../assets/logo.png";
 import { ref } from 'vue'
 import { Amplify, Auth } from 'aws-amplify';
+import { useAppStore } from '../store/app';
 
 export default {
     name: 'Header',
@@ -43,19 +43,22 @@ export default {
                 },
             },
         });
+        const appStore = useAppStore();
         return {
             login: () => {
                 Auth.federatedSignIn();
             },
             logout: () => {
+                appStore.clearSurvey();
                 Auth.signOut();
             },
             register: () => {
-                Auth.federatedSignIn();
+                location.href = `https://${import.meta.env.VITE_COGNITO_APP_DOMAIN}/signup?response_type=code&client_id=${import.meta.env.VITE_COGNITO_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_COGNITO_REDIRECT_URI}`
             },
             logo,
             isAuthenticated: ref(false),
             user: ref({}),
+            appStore,
         }
     },
     async beforeMount() {
@@ -74,6 +77,7 @@ export default {
 .flex-grow {
     flex-grow: 1;
 }
+
 .home-menu {
     align-items: center;
 }

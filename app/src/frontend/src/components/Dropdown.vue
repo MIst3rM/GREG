@@ -12,7 +12,7 @@
     </el-row>
     <h4>Edit Suggestions</h4>
     <el-row class="group-container">
-        <draggable class="answers" :list="suggestions" tag="transition-group" :component-data="{
+        <draggable class="answers" :list="list" tag="transition-group" :component-data="{
             tag: 'div',
             type: 'transition-group',
             name: 'fade',
@@ -72,7 +72,7 @@ export default {
         return {
             state: '',
             saving: false,
-            suggestions: demo_suggestions.map((item, index) => {
+            list: demo_suggestions.map((item, index) => {
                 return { name: item, order: index + 1, addremove: (index + 1) === demo_suggestions.length ? 1 : 0, binding: item }
             }),
             drag: false,
@@ -81,16 +81,16 @@ export default {
     },
     methods: {
         removeItem(idx: number) {
-            this.suggestions.splice(idx, 1);
+            this.list.splice(idx, 1);
         },
         addItem(name: string) {
-            this.suggestions.find((item) => item.name === name).addremove = 0;
-            this.suggestions.find((item) => item.addremove === 1) ? "" : (this.initialLength++, this.suggestions.push({ name: "item" + this.initialLength, order: this.initialLength, addremove: 1, binding: "" }));
+            this.list.find((item) => item.name === name).addremove = 0;
+            this.list.find((item) => item.addremove === 1) ? "" : (this.initialLength++, this.list.push({ name: "item" + this.initialLength, order: this.initialLength, addremove: 1, binding: "" }));
         },
         querySearch(queryString: string, cb: any) {
             const results = queryString
-                ? this.suggestions.filter(s => s.binding.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
-                : this.suggestions
+                ? this.list.filter(s => s.binding.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
+                : this.list
             cb(results)
         },
         onDeleteQuestion(idx: number) {
@@ -105,7 +105,7 @@ export default {
                 "title": this.$refs.questionTitle.question,
                 "choices": []
             }
-            this.suggestions.forEach((item) => {
+            this.list.forEach((item) => {
                 if (item.addremove === 0) {
                     question.choices.push(item.binding);
                 }
@@ -128,11 +128,11 @@ export default {
     margin: 20px;
 }
 
-.dropdown>>>.inline-input {
+.dropdown:deep(.inline-input) {
     width: 100%;
 }
 
-.dropdown>>>.el-input {
+.dropdown:deep(.el-input) {
     font-size: larger;
 }
 

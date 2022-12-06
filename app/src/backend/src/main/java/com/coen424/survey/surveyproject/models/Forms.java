@@ -1,15 +1,15 @@
 package com.coen424.survey.surveyproject.models;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
 
 import java.util.List;
 import java.util.Map;
-
+@JsonFilter("formsFilter")
 @DynamoDbBean
 public class Forms {
-
     private String user_id;
 
     private String form_id;
@@ -22,9 +22,19 @@ public class Forms {
 
     private String status;
 
+    private boolean sharedPublicly;
+
     private String created_at;
 
     private String last_modified_at;
+
+    private String published_at;
+
+    private String closing_at;
+
+    private String surveyJson;
+
+    private int submissions_count;
 
     @DynamoDbPartitionKey
     public String getUser_id() {
@@ -91,6 +101,46 @@ public class Forms {
         this.last_modified_at = last_modified_at;
     }
 
+    public String getSurveyJson() {
+        return surveyJson;
+    }
+
+    public void setSurveyJson(String surveyJson) {
+        this.surveyJson = surveyJson;
+    }
+
+    public boolean getSharedPublicly() {
+        return sharedPublicly;
+    }
+
+    public void setSharedPublicly(boolean sharedPublicly) {
+        this.sharedPublicly = sharedPublicly;
+    }
+
+    public int getSubmissions_count() {
+        return submissions_count;
+    }
+
+    public void setSubmissions_count(int submissions_count) {
+        this.submissions_count = submissions_count;
+    }
+
+    public String getPublished_at() {
+        return published_at;
+    }
+
+    public void setPublished_at(String published_at) {
+        this.published_at = published_at;
+    }
+
+    public String getClosing_at() {
+        return closing_at;
+    }
+
+    public void setClosing_at(String closing_at) {
+        this.closing_at = closing_at;
+    }
+
     @Override
     public String toString() {
         return "Forms{" +
@@ -100,8 +150,13 @@ public class Forms {
                 ", description='" + description + '\'' +
                 ", questions=" + questions +
                 ", status='" + status + '\'' +
+                ", sharedPublicly=" + sharedPublicly +
                 ", created_at='" + created_at + '\'' +
                 ", last_modified_at='" + last_modified_at + '\'' +
+                ", published_at='" + published_at + '\'' +
+                ", closing_at='" + closing_at + '\'' +
+                ", surveyJson='" + surveyJson + '\'' +
+                ", submissions_count=" + submissions_count +
                 '}';
     }
 }

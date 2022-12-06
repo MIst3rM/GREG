@@ -2,7 +2,7 @@
     <QuestionTitle ref="questionTitle" :saving="saving" :num="num" />
     <el-row class="group-container">
         <el-checkbox-group v-model="check">
-            <draggable v-model="list" tag="transition-group" :component-data="{
+            <draggable v-model="list" v-bind="dragOptions" :component-data="{
                 tag: 'div',
                 type: 'transition-group',
                 name: 'fade',
@@ -107,5 +107,15 @@ export default {
             this.$emit('saveChanges');
         }
     },
+    computed: {
+        dragOptions() {
+            return {
+                animation: 250,
+                group: "people",
+                disabled: false,
+                ghostClass: "ghost"
+            };
+        },
+    }
 };
 </script>

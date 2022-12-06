@@ -46,5 +46,17 @@
     "name": "Ranking",
     "content": "ranking toolbox item",
     "type": "sort"
+  },
+  {
+    "id": "9",
+    "name": "Rating",
+    "content": "rating toolbox item",
+    "type": "star_rate"
+  },
+  {
+    "id": "10",
+    "name": "Video",
+    "content": "video toolbox item",
+    "type": "play_arrow"
   }
 ]

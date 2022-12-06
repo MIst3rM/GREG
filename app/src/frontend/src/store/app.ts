@@ -1,20 +1,23 @@
 import { defineStore } from "pinia";
-import { uuid } from 'vue3-uuid';
 
 export const useAppStore = defineStore("app", {
   state: () => ({
     surveyJson: {
-        "surveyId": uuid.v4(),
         "title": "",
         "description": "",
         "logoPosition": "right",
-        "pages": [] as Array<{}>
+        "completedHtml": "<h3>Thank you for completing this survey</h3>",
+        "pages": [] as Array<{}>,
     },
-    questions: [] as Array<any>
+    surveyId: "",
+    questions: [] as Array<{}>,
   }),
   getters: {
     getSurvey: (state) => {
         return state.surveyJson;
+    },
+    getSurveyId: (state) => {
+        return state.surveyId;
     },
     getNumberOfPages: (state) => {
         return state.surveyJson.pages.length;
@@ -25,18 +28,21 @@ export const useAppStore = defineStore("app", {
         }, 0);
     },
     getQuestions: (state) => {
+        if (state.surveyJson.pages.length === 0) {
+            return [];
+        }
         return state.surveyJson.pages.reduce((acc, page) => {
             return acc.concat(page.elements);
         });
+    },
+    getSavedQuestions: (state) => {
+        return state.questions;
     },
     getTitle: (state) => {
         return state.surveyJson.title;
     },
     getDescription: (state) => {
         return state.surveyJson.description;
-    },
-    getSurveyId: (state) => {
-        return state.surveyJson.surveyId;
     }
   },
   actions: {
@@ -59,6 +65,12 @@ export const useAppStore = defineStore("app", {
     removeElement(idx: number) {
         this.surveyJson.pages[0].elements.splice(idx, 1);
     },
+    setSurvey(survey: {}) {
+        this.surveyJson = survey;
+    },
+    setSurveyId(surveyId: string) {
+        this.surveyId = surveyId;
+    },
     setTitle(title: string) {
         this.surveyJson.title = title;
     },
@@ -67,6 +79,23 @@ export const useAppStore = defineStore("app", {
     },
     saveQuestions(questions: Array<any>) {
         this.questions = questions;
+    },
+    clearSurvey() {
+        this.surveyJson = {
+            "title": "",
+            "description": "",
+            "logoPosition": "right",
+            "completedHtml": "<h3>Thank you for completing this survey</h3>",
+            "pages": [] as Array<{}>,
+        };
+        this.questions = [] as Array<{}>;
+    },
+    reset(){
+        this.surveyJson.title = "";
+        this.surveyJson.description = "";
+        this.surveyJson.pages = [] as Array<{}>;
+        this.questions = [] as Array<{}>;
+        this.surveyId = "";
     }
   },
   persist: {

@@ -14,6 +14,12 @@ import ImagePicker from "./ImagePicker.vue";
 import ApiForm from "./ApiForm.vue";
 import SurveyGallery from "./SurveyGallery.vue";
 import Dropdown from "./Dropdown.vue";
+import User from "./User.vue";
+import Single from "./Single.vue";
+import Multiple from "./Multiple.vue";
+import Comment from "./Comment.vue";
+import Video from "./Video.vue";
+import Rating from "./Rating.vue";
 
 export {
   Header,
@@ -32,5 +38,11 @@ export {
   ApiForm,
   SurveyGallery,
   Dropdown,
+  User,
+  Single,
+  Multiple,
+  Comment,
+  Video,
+  Rating,
 };
 

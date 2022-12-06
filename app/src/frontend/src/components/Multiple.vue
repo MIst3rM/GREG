@@ -1,8 +1,8 @@
 <template>
     <QuestionTitle :saving="saving" :num="num" ref="questionTitle" />
     <el-row class="group-container">
-        <el-radio-group v-model="radio">
-            <draggable :list="list" v-bind="dragOptions" :component-data="{
+        <el-radio-group class="multiple-container" v-model="radio">
+            <draggable class="draggable" :list="list" v-bind="dragOptions" :component-data="{
                 tag: 'div',
                 type: 'transition-group',
                 name: 'fade',
@@ -21,10 +21,13 @@
                                 add_circle
                             </span>
                         </span>
-                        <el-radio :label="element.order" :key="index + '-4'">
-                            <el-input v-model="element.binding" class="choice" size="large" :placeholder="element.name"
-                                :key="index + '-4.1'" />
-                        </el-radio>
+                        <el-input class="multiple" autofocus clearable size="large" v-model="element.binding"
+                            :key="index + '-4'">
+                            <template #prepend>
+                                <el-input class="prepend-input" type="text" v-model="element.name"
+                                    :input-style="{ textAlign: 'center' }" />
+                            </template>
+                        </el-input>
                     </el-col>
                 </template>
             </draggable>
@@ -38,10 +41,11 @@ import draggable from 'vuedraggable'
 import QuestionTitle from './QuestionTitle.vue'
 import DeleteQuestion from './DeleteQuestion.vue'
 import { useAppStore } from '../store/app';
-const answers = ["item1", "item2", "item3", "item4", "None", "Other (describe)"];
+
+const texts = ['text1', 'text2', 'text3'];
 
 export default {
-    name: 'Radiogroup',
+    name: 'Multiple',
     emits: ['deleteQuestion', 'saveChanges'],
     components: {
         draggable,
@@ -51,7 +55,6 @@ export default {
     props: {
         num: {
             type: Number,
-            required: true,
             default: 0
         },
     },
@@ -63,16 +66,54 @@ export default {
     },
     data() {
         return {
+            saving: false,
             radio: '',
             drag: false,
-            list: answers.map((name, index) => {
-                return { name, order: index + 1, addremove: index > 2 ? 1 : 0, binding: "" };
-            }),
-            question: '',
-            show: false,
-            initialLength: answers.length,
-            saving: false
-        };
+            initialLength: texts.length,
+            list: texts.map((text, index) => {
+                return {
+                    id: index,
+                    name: text,
+                    binding: '',
+                    order: index,
+                    addremove: index > 1 ? 1 : 0
+                }
+            })
+        }
+    },
+    methods: {
+        addItem(name: string) {
+            this.list.find((item) => item.name === name).addremove = 0;
+            this.list.find((item) => item.addremove === 1) ? "" : (this.initialLength++, this.list.push({ name: "item" + this.initialLength, order: this.initialLength, addremove: 1, binding: "" }));
+        },
+        removeItem(idx: number) {
+            this.list.splice(idx, 1);
+        },
+        onDeleteQuestion(idx: number) {
+            this.$emit('deleteQuestion', idx);
+        },
+        save() {
+            let question = {
+                "type": "multipletext",
+                "name": "question" + this.num,
+                "title": this.$refs.questionTitle.question,
+                "isRequired": this.$refs.deleteQuestion.required,
+                "placeholder": this.placeholder,
+                "items": this.list.filter(f => f.addremove === 0).map((item) => {
+                    return {
+                        "name": item.name
+                    }
+                })
+            }
+            if (this.appStore.findElement(this.num - 1)) {
+                this.appStore.updateElement(this.num - 1, question);
+            } else {
+                this.appStore.addQuestion("Page1", question);
+            }
+            this.saving = true;
+            setTimeout(() => this.saving = false, 4000);
+            this.$emit('saveChanges');
+        }
     },
     computed: {
         dragOptions() {
@@ -83,104 +124,39 @@ export default {
                 ghostClass: "ghost"
             };
         },
-    },
-    methods: {
-        removeItem(idx: number) {
-            this.list.splice(idx, 1);
-        },
-        addItem(name: string) {
-            this.list.find((item) => item.name === name).addremove = 0;
-            this.list.find((item) => item.addremove === 1) ? "" : (this.initialLength++, this.list.push({ name: "item" + this.initialLength, order: this.initialLength, addremove: 1, binding: "" }));
-        },
-        onDeleteQuestion(idx: number) {
-            this.$emit('deleteQuestion', idx);
-        },
-        save() {
-            let question = {
-                "type": "radiogroup",
-                "name": "question" + this.num,
-                "isRequired": this.$refs.deleteQuestion.required,
-                "title": this.$refs.questionTitle.question,
-                "choices": []
-            }
-            this.list.forEach((item) => {
-                if (item.addremove === 0) {
-                    question.choices.push(item.binding);
-                }
-            })
-            if (this.appStore.findElement(this.num-1)) {
-                this.appStore.updateElement(this.num-1, question);
-            } else {
-                this.appStore.addQuestion("Page1", question);
-            }
-            this.saving = true;
-            setTimeout(() => this.saving = false, 4000);
-            this.$emit('saveChanges');
-        }
-    },
-};
+    }
+}
 </script>
 
-<style>
-.status .el-form-item__content {
-    justify-content: flex-end;
+<style scoped>
+.multiple:deep(.el-input__wrapper) {
+    border: 1px solid #e4e7ed;
 }
 
-.save-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
+.multiple:deep(.el-input-group__prepend) {
+    background-color: #c5e9e2;
+    padding: 0px;
 }
 
-.list-move {
-    transition: all 0.5s ease;
+.multiple-container {
+    width: 100%;
 }
 
-.minus {
-    color: red;
-    display: inherit;
-    margin-right: 20px;
-    border-radius: 20px;
-    scale: 1.5;
+.draggable {
+    width: 80%;
 }
 
-.plus {
-    color: green;
-    display: inherit;
-    margin-right: 20px;
-    border-radius: 20px;
-    scale: 1.5;
+.prepend-input {
+    all: unset;
+    width: 120px;
 }
 
-.minus:hover {
-    background-color: var(--red-light, rgba(229, 10, 62, 0.1));
+.prepend-input:deep(.el-input__wrapper) {
+    border: none;
 }
 
-.plus:hover {
-    background-color: var(--green-light, rgba(25, 179, 148, 0.1));
-}
-
-.minus-inner,
-.plus-inner {
-    scale: 0.7;
-}
-
-ul {
-    padding: 0;
-    list-style-type: none;
-}
-
-.answers {
-    display: flex;
-    align-items: center;
-    margin: 10px 0;
-}
-
-.question {
-    align-items: center;
-}
-
-.group-container {
-    padding: 0 0 0 50px;
+.prepend-input:deep(.el-input__wrapper.is-focus),
+.prepend-input:deep(.el-input__wrapper:hover) {
+    box-shadow: none;
 }
 </style>

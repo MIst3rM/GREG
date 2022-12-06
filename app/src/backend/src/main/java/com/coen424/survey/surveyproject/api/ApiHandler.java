@@ -1,21 +1,11 @@
 package com.coen424.survey.surveyproject.api;
 
 import com.coen424.survey.surveyproject.models.LambdaFunction;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
-import org.springframework.stereotype.Component;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.core.waiters.WaiterResponse;
 import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.iam.IamClient;
-import software.amazon.awssdk.services.iam.model.*;
-import software.amazon.awssdk.services.iam.waiters.IamWaiter;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.*;
-import software.amazon.awssdk.services.iam.model.GetPolicyRequest;
-import software.amazon.awssdk.services.iam.model.GetPolicyResponse;
-import software.amazon.awssdk.services.iam.model.CreatePolicyRequest;
 import software.amazon.awssdk.services.lambda.waiters.LambdaWaiter;
 
 public class ApiHandler {

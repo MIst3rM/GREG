@@ -8,11 +8,11 @@
         </el-col>
     </el-row>
     <el-row class="boolean-inputs-container">
-        <el-col :span="5">
-            <el-input v-model="left" maxlength="10" show-word-limit placeholder="set left value" />
+        <el-col :span="8">
+            <el-input v-model="left" maxlength="10" show-word-limit placeholder="No" />
         </el-col>
-        <el-col :span="5">
-            <el-input v-model="right" maxlength="10" show-word-limit placeholder="set right value" />
+        <el-col :span="8">
+            <el-input v-model="right" maxlength="10" show-word-limit placeholder="Yes" />
         </el-col>
     </el-row>
     <DeleteQuestion ref="deleteQuestion" :num="num" @deleteQuestion="onDeleteQuestion" />
