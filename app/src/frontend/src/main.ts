@@ -17,7 +17,7 @@ import UUID from "vue3-uuid";
 import { Home, Profile, SharedResults } from "./views";
 import { SurveyDesigner, SurveyCreator } from "./components";
 
-axios.defaults.baseURL = "http://localhost:8090/api/v1";
+axios.defaults.baseURL = "https://backend-env.eba-ndzmkia6.us-east-1.elasticbeanstalk.com/api/v1";
 
 const routes = [
   { path: "/", component: Home },

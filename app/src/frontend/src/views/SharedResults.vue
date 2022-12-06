@@ -139,7 +139,7 @@ export default {
     },
     computed: {
         curlExample() {
-            return "curl -L -X GET 'http://localhost:8090/api/v1/getResultsForSharedForm?form_id=" + this.form_id + "' -H 'x-api-key:" + this.apiKey + "'";
+            return "curl -L -X GET 'https://backend-env.eba-ndzmkia6.us-east-1.elasticbeanstalk.com/api/v1/getResultsForSharedForm?form_id=" + this.form_id + "' -H 'x-api-key:" + this.apiKey + "'";
         }
     },
     methods: {
