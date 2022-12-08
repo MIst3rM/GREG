@@ -1,0 +1,68 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [ "misterm" ]
+  pull_request:
+    branches: [ "misterm" ]
+
+# Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./app/src/frontend
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Create .env file
+      run: |
+        touch .env
+        echo "VITE_COGNITO_CLIENT_ID=${{ secrets.VITE_COGNITO_CLIENT_ID }}" >> .env
+        echo "VITE_COGNITO_USERPOOL_ID=${{ secrets.VITE_COGNITO_USERPOOL_ID }}" >> .env
+        echo "VITE_COGNITO_APP_DOMAIN=${{ secrets.VITE_COGNITO_APP_DOMAIN }}" >> .env
+        echo "VITE_COGNITO_REDIRECT_URI=${{ secrets.VITE_COGNITO_REDIRECT_URI }}" >> .env
+        echo "VITE_APP_URL=${{ secrets.VITE_APP_URL }}" >> .env
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16.x'
+        cache: 'npm'
+        cache-dependency-path: ./app/src/frontend/yarn.lock
+
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Build Project
+      run: npm run build --if-present
+
+    - name: Upload Build
+      uses: actions/upload-artifact@v3
+      with: 
+        name: artifact
+        path: app/src/frontend/dist
+
+    - name: Run s3-sync-action
+      uses: jakejarvis/s3-sync-action@master
+      with:
+        args: --acl public-read --follow-symlinks --delete
+      env:
+        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: us-east-1
+        SOURCE_DIR: app/src/frontend/dist
+      
+    - name: Run invalidate-cloudfront-action
+      uses: chetan/invalidate-cloudfront-action@master
+      env:
+        PATHS: '/*'
+        AWS_REGION: 'us-east-1'
+        DISTRIBUTION: ${{ secrets.DISTRIBUTION }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

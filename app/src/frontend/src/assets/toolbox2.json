@@ -1,0 +1,20 @@
+[
+  {
+    "id": "11",
+    "name": "Single Input",
+    "content": "single Input toolbox item",
+    "type": "horizontal_rule"
+  },
+  {
+    "id": "12",
+    "name": "Comment",
+    "content": "comment toolbox item",
+    "type": "insert_comment"
+  },
+  {
+    "id": "13",
+    "name": "Multiple Text",
+    "content": "multiple text toolbox item",
+    "type": "format_align_justify"
+  }
+]
