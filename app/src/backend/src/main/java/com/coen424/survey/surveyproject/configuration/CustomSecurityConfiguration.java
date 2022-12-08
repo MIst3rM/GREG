@@ -69,7 +69,6 @@ public class CustomSecurityConfiguration {
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
             String role = (String) jwt.getClaims().get("cognito:groups");
-//            System.out.println(Arrays.toString(jwt.getClaims().keySet().toArray()));
             return role != null ? List.of(new SimpleGrantedAuthority(role)) : List.of();
         });
         return jwtAuthenticationConverter;

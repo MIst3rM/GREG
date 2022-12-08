@@ -225,7 +225,6 @@ export default {
             this.$refs.header.surveyName = this.appStore.getTitle;
             this.$refs.header.surveyDesc = this.appStore.getDescription;
             let fetchQuestions = this.appStore.getQuestions.elements;
-            console.log(fetchQuestions);
 
             for (let i = 0; i < this.questions.length; i++) {
                 let q = fetchQuestions[i]
@@ -377,10 +376,8 @@ export default {
                     this.numOfQuestions = 0;
                     this.pages = [] as Array<string>;
                     this.appStore.reset();
-                    console.log(response);
                 }).catch((error) => {
                     this.loading = false;
-                    console.log(error);
                 });
             }
         },

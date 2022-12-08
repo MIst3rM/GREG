@@ -131,7 +131,6 @@ export default {
                 sharedPublicly: share
             })
                 .then((response) => {
-                    console.log(response)
                     this.$emit('shared')
                     ElNotification({
                         title: 'Success',
@@ -139,7 +138,6 @@ export default {
                         type: 'success',
                     })
                 }, (error) => {
-                    console.log(error);
                     ElNotification({
                         title: 'Error',
                         message: error.response.data,

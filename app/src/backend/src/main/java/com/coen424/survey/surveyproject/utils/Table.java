@@ -5,8 +5,7 @@ import com.coen424.survey.surveyproject.models.Forms;
 
 public enum Table {
     FORMS("Forms", Forms.class),
-    FORM_SUBMISSIONS("Form_Submissions", Form_Submissions.class),
-    FORM_ATTACHMENTS("Form_Attachments", null);
+    FORM_SUBMISSIONS("Form_Submissions", Form_Submissions.class);
 
     private final String tableName;
     private final Class<?> tableClass;

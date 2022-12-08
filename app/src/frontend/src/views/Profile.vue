@@ -44,23 +44,23 @@ export default {
             surveys: [],
         }
     },
-    async beforeRouteEnter(to, from, next) {
-        let isAuthenticated = false;
-        try {
-            if (await Auth.currentUserInfo()) {
-                isAuthenticated = true;
-            }
-        } catch (error) {
-            isAuthenticated = false;
-        }
-        next(vm => {
-            if (!isAuthenticated) {
-                vm.$router.push('/');
-            } else {
-                vm.$router.push('/profile');
-            }
-        });
-    },
+    // async beforeRouteEnter(to, from, next) {
+    //     let isAuthenticated = false;
+    //     try {
+    //         if (await Auth.currentUserInfo()) {
+    //             isAuthenticated = true;
+    //         }
+    //     } catch (error) {
+    //         isAuthenticated = false;
+    //     }
+    //     next(vm => {
+    //         if (!isAuthenticated) {
+    //             vm.$router.push('/');
+    //         } else {
+    //             vm.$router.push('/profile');
+    //         }
+    //     });
+    // },
     methods: {
         createApi() {
             this.public_apis.push({
@@ -78,7 +78,6 @@ export default {
                 await axios.get("/getAllForms")
                     .then((response) => {
                         this.surveys = response.data;
-                        console.log(response)
                     }, (error) => {
                         console.log(error);
                     });
@@ -92,7 +91,6 @@ export default {
             await axios.get("/getAllForms")
                 .then((response) => {
                     this.surveys = response.data;
-                    console.log(response)
                 }, (error) => {
                     console.log(error);
                 });

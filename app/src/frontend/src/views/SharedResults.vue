@@ -146,9 +146,6 @@ export default {
         requestAccess(form_id: number) {
             this.dialogVisible = true;
             this.form_id = form_id;
-            setTimeout(() => {
-                console.log(this.$refs.apiExample);
-            }, 300);
         },
         copyToClipboard() {
             this.$refs.apiExample.select();
