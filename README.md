@@ -1,44 +1,82 @@
 # GREG
 
-## ⚠️ On Windows Only Section Start ⚠️
-Docker desktop with hyper-v backend engine will require you to share project files with docker before you can start the project.
+A web application for creating, sharing and collecting responses to surveys.
 
-## Sharing Project Files
-1. Open Docker Desktop
-2. Go in settings
-3. Click on resources > File sharing
-4. Add the app directory of the project
-5. Click on apply & restart
-6. Yon can now start the project
+- **Frontend**: Vue 3, TypeScript, Vite, Pinia and Element Plus, with sign-in through Amazon Cognito
+- **Backend**: Spring Boot 2.7 (Java 17) with DynamoDB
+- **Serverless**: AWS Lambda functions for API keys, survey status and response aggregation (`app/lambda/`)
+- **Local setup**: Docker Compose (nginx, frontend and backend containers)
 
-## ⚠️ On Windows Only Section End ⚠️
-</br>
+## Project Structure
 
-## Building the project
+```
+app/
+  docker-compose.yml    nginx + frontend + backend
+  .env.example          Environment variables used by the containers
+  src/frontend/         Vue 3 + Vite app
+  src/backend/          Spring Boot API
+  lambda/               AWS Lambda functions (Python)
+```
+
+## Getting Started
+
+> **Windows only:** Docker Desktop with the Hyper-V backend needs access to the project files first.
+> Open Docker Desktop → **Settings** → **Resources** → **File sharing**, add the `app` folder, then click **Apply & restart**.
+
+All commands below are run from the `app` folder.
+
+### 1. Set the environment variables
+
+```bash
+cp .env.example .env
+```
+
+Fill it in (Docker Compose passes it to both containers). To run the backend outside Docker, do the same with `src/backend/.env.example`.
+
+| Variable | Used by | Description |
+| --- | --- | --- |
+| `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` | backend | AWS credentials with DynamoDB access |
+| `AWS_REGION` | backend | AWS region, e.g. `us-east-1` |
+| `DYNAMO_ENDPOINT` | backend | DynamoDB endpoint URL |
+| `VITE_COGNITO_CLIENT_ID` | frontend | Cognito app client ID |
+| `VITE_COGNITO_APP_DOMAIN` | frontend | Cognito hosted UI domain |
+| `VITE_COGNITO_REDIRECT_URI` | frontend | Where Cognito redirects after sign-in |
+| `VITE_COGNITO_USERPOOL_ID` | frontend | Cognito user pool ID |
+| `VITE_APP_URL` | frontend | Public URL of the app |
+
+### 2. Build the containers
 
 ```bash
 docker compose build
 ```
 
-## Starting the project for the first time
+### 3. Install the frontend dependencies
 
-### Install node modules
 ```bash
 docker compose run --rm frontend yarn
 ```
 
-### Inject Environment Variables
-1.  Create a .env file inside the app folder
-2.  Set the following variables:
-    1.  AWS_ACCESS_KEY_ID=\<Your Key ID\>
-    2.  AWS_SECRET_ACCESS_KEY=\<Your Secret Key\>
-    3.  AWS_REGION=\<Preffered Aws Region\>
-    4.  DYNAMO_ENDPOINT=\<DB Endpoint Url\>
+### 4. Start everything
 
-### Bring Up Containers
 ```bash
 docker compose up -d
 ```
 
+The app is served through nginx on <http://localhost>.
 
+## AWS Lambda Functions
 
+The functions in `app/lambda/` run on AWS (Python runtime with `boto3`):
+
+| Function | Trigger | What it does |
+| --- | --- | --- |
+| `generateAPIKey.py` | API Gateway | Creates an API key and adds it to the API's usage plan |
+| `Fetch_Survey_Responses.py` | API Gateway | Returns the answers of a publicly shared survey, grouped by question |
+| `UpdateSubmissions.py` | DynamoDB stream (new submissions) | Increments a survey's `submissions_count` in the `Forms` table when a response is added |
+| `UpdateSurveyStatus.py` | Schedule | Marks active surveys as `EXPIRED` once their closing time has passed |
+
+`UpdateSurveyStatus.py` also needs `pytz`, which must be packaged with the function or added as a layer.
+
+## License
+
+[GNU AGPL v3](LICENSE)

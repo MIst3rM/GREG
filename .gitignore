@@ -1,4 +1,23 @@
+# Environment files (copy the .env.example templates instead)
 **/.env
-**/.DS_Store
-**/.vscode
+
+# Dependencies and build output
+**/node_modules
+**/dist
+**/build
+**/bin
+**/.gradle
 **/dynamodb
+
+# Spring DevTools reload trigger (rewritten by the buildAndReload task)
+app/src/backend/reload-trigger.txt
+app/src/backend/HELP.md
+
+# IDEs
+**/.vscode
+**/.idea
+
+# OS files
+**/.DS_Store
+**/._*
+Thumbs.db
