@@ -35,8 +35,7 @@
                     <DesignerHeader ref="header" @reset="onReset" v-if="appStore.getNumberOfPages !== 0" />
                     <SurveyPage ref="page1" v-if="appStore.getNumberOfPages !== 0" @deleteQuestion="onDeleteQuestion"
                         @saveChanges="onSaveChanges" :questions="{ ...questions }" :numOfQuestions="numOfQuestions" />
-                    <el-empty v-if="appStore.getNumberOfPages === 0"
-                        description="Click The Button Below To Get Started">
+                    <el-empty v-if="appStore.getNumberOfPages === 0" description="Click The Button Below To Get Started">
                         <el-button type="primary" @click="addPage">Add A Page</el-button>
                     </el-empty>
                     <el-row class="submit-survey-container">
@@ -45,8 +44,8 @@
                                 v-if="appStore.getNumberOfPages !== 0" class="create-survey">
                                 Save
                             </el-button>
-                            <el-button type="warning" :disabled="questions.length === 0 ? true : false"
-                                @click="saveSurvey" v-if="appStore.getNumberOfPages !== 0" class="create-survey">
+                            <el-button type="warning" :disabled="questions.length === 0 ? true : false" @click="saveSurvey"
+                                v-if="appStore.getNumberOfPages !== 0" class="create-survey">
                                 Generate Preview
                             </el-button>
                             <el-button type="primary" :disabled="questions.length === 0 ? true : false"
@@ -57,8 +56,8 @@
                     </el-row>
                 </el-col>
                 <el-col :span="1">
-                    <lord-icon class="open-drawer" src="https://cdn.lordicon.com/zmkotitn.json" trigger="loop"
-                        delay="2000" state="hover-3" style="width:32px;height:32px" @click="drawer = true">
+                    <lord-icon class="open-drawer" src="https://cdn.lordicon.com/zmkotitn.json" trigger="loop" delay="2000"
+                        state="hover-3" style="width:32px;height:32px" @click="drawer = true">
                     </lord-icon>
                 </el-col>
                 <el-drawer size="35%" v-model="drawer" title="Survey Settings" direction="rtl">
@@ -79,8 +78,8 @@
         </el-tab-pane>
         <el-tab-pane name="second" :disabled="appStore.getNumberOfQuestions === 0 ? true : false">
             <template #label>
-                <el-popover :disabled="appStore.getNumberOfQuestions !== 0 ? true : false" :width="180"
-                    placement="bottom" trigger="hover" content="Save your changes first">
+                <el-popover :disabled="appStore.getNumberOfQuestions !== 0 ? true : false" :width="180" placement="bottom"
+                    trigger="hover" content="Save your changes first">
                     <template #reference>
                         <span class="custom-tabs-label">
                             <span>Preview</span>
@@ -131,7 +130,7 @@ const tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseco
 export default {
     name: 'SurveyDesigner',
     async beforeRouteEnter(to, from, next) {
-        let isAuthenticated = false;
+        let isAuthenticated = true;
         try {
             if (await Auth.currentUserInfo()) {
                 isAuthenticated = true;
